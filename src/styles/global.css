@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+
+  --color-brand-500: oklch(0.65 0.22 270);
+  --color-brand-600: oklch(0.55 0.24 270);
+  --color-brand-700: oklch(0.45 0.22 270);
+  --color-surface-900: oklch(0.11 0.01 260);
+  --color-surface-800: oklch(0.14 0.01 260);
+  --color-surface-700: oklch(0.18 0.01 260);
+  --color-surface-600: oklch(0.22 0.01 260);
+  --color-glow: oklch(0.65 0.22 270 / 0.35);
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-surface-900);
+    color: white;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: oklch(1 0 0 / 0.04);
+    backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid oklch(1 0 0 / 0.08);
+  }
+
+  .glass-hover {
+    transition: background 250ms var(--ease-smooth),
+                border-color 250ms var(--ease-smooth),
+                box-shadow 250ms var(--ease-smooth),
+                transform 200ms var(--ease-spring);
+  }
+
+  .glass-hover:hover {
+    background: oklch(1 0 0 / 0.07);
+    border-color: oklch(1 0 0 / 0.16);
+  }
+
+  .glass-hover:active {
+    transform: scale(0.97);
+  }
+
+  .glow-brand {
+    box-shadow: 0 0 40px var(--color-glow), 0 0 80px oklch(0.65 0.22 270 / 0.15);
+  }
+
+  .glow-ring {
+    box-shadow: 0 0 0 2px var(--color-brand-500), 0 0 20px var(--color-glow);
+  }
+
+  .gradient-brand {
+    background: linear-gradient(135deg, var(--color-brand-500), oklch(0.7 0.2 310));
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-brand-500), oklch(0.75 0.18 310));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .touch-target {
+    min-height: 80px;
+    cursor: pointer;
+    user-select: none;
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--color-glow); }
+  50%       { box-shadow: 0 0 50px var(--color-glow), 0 0 80px oklch(0.65 0.22 270 / 0.2); }
+}
+
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position:  200% center; }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fadeInUp  { animation: fadeInUp  0.5s var(--ease-smooth) both; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-spin-slow  { animation: spin-slow 1.2s linear infinite; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* ── New-order CTA button ──────────────────────────────────────────────── */
+.new-order-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 80px;
+  padding: 1.25rem 2.5rem;
+  border-radius: 1.5rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: white;
+  background: linear-gradient(
+    135deg,
+    oklch(0.55 0.24 270),
+    oklch(0.65 0.22 290),
+    oklch(0.68 0.20 310)
+  );
+  box-shadow:
+    0 0 60px oklch(0.65 0.22 270 / 0.45),
+    0 4px 24px oklch(0 0 0 / 0.4),
+    inset 0 1px 0 oklch(1 0 0 / 0.15);
+  transition:
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 220ms ease,
+    opacity 150ms ease;
+}
+
+.new-order-btn:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 90px oklch(0.65 0.22 270 / 0.6),
+    0 8px 32px oklch(0 0 0 / 0.5),
+    inset 0 1px 0 oklch(1 0 0 / 0.2);
+}
+
+.new-order-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}

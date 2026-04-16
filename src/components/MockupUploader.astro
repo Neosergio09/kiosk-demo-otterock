@@ -1,0 +1,256 @@
+---
+import ShirtViewer3D from './ShirtViewer3D.astro';
+---
+
+<div class="flex flex-col gap-4 lg:gap-5" id="uploader-root">
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       1. 3D Garment Viewer — always visible, placement selector lives here
+  ════════════════════════════════════════════════════════════════════ -->
+  <ShirtViewer3D />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       2. Design Upload Section
+  ════════════════════════════════════════════════════════════════════ -->
+  <div class="flex flex-col gap-3">
+    <p class="text-zinc-400 text-lg lg:text-xl font-medium px-1">Sube tu diseño</p>
+
+    <!-- Hidden file input -->
+    <input
+      type="file"
+      id="design-file-input"
+      name="design"
+      accept="image/*"
+      class="sr-only"
+      aria-label="Subir imagen de diseño"
+    />
+
+    <!-- ── Dropzone ──────────────────────────────────────────────────── -->
+    <div
+      id="dropzone"
+      role="button"
+      tabindex="0"
+      aria-label="Zona de carga — Toca para seleccionar imagen"
+      class="relative rounded-2xl lg:rounded-3xl cursor-pointer flex flex-col items-center justify-center gap-3 lg:gap-4 transition-all duration-500 border-2 border-dashed"
+      style="
+        min-height: 160px;
+        background: oklch(1 0 0 / 0.03);
+        backdrop-filter: blur(20px) saturate(1.3);
+        border-color: oklch(1 0 0 / 0.12);
+      "
+    >
+      <!-- Upload prompt -->
+      <div id="upload-prompt" class="flex items-center gap-5 text-left px-6 py-5 w-full">
+        <div
+          class="w-14 h-14 lg:w-16 lg:h-16 rounded-2xl gradient-brand flex items-center justify-center shadow-xl shrink-0"
+          style="box-shadow: 0 0 30px oklch(0.65 0.22 270 / 0.4);"
+        >
+          <svg class="w-7 h-7 lg:w-8 lg:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+        </div>
+        <div class="min-w-0">
+          <p class="text-lg lg:text-xl font-bold text-white">Toca para subir tu diseño</p>
+          <p class="text-sm text-zinc-500 mt-0.5">PNG, JPG, SVG, WebP · Máx. 10 MB</p>
+          <p class="text-xs text-zinc-600 mt-0.5 hidden lg:block">También puedes arrastrar la imagen aquí</p>
+        </div>
+      </div>
+
+      <!-- Drag-over overlay -->
+      <div
+        id="drag-overlay"
+        class="absolute inset-0 rounded-2xl lg:rounded-3xl hidden items-center justify-center"
+        style="background: oklch(0.65 0.22 270 / 0.15); border: 2px solid oklch(0.65 0.22 270 / 0.6);"
+      >
+        <div class="flex flex-col items-center gap-2">
+          <svg class="w-12 h-12 text-violet-400 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+          <p class="text-xl font-bold text-violet-300">Suelta aquí</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── File Preview Strip (shown after upload) ─────────────────────── -->
+    <div id="preview-strip" class="hidden items-center gap-4 glass rounded-2xl px-4 py-4 animate-fadeInUp">
+      <!-- Thumbnail -->
+      <div
+        class="w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
+        style="background: oklch(0.18 0.01 260); border: 1px solid oklch(1 0 0 / 0.1);"
+      >
+        <img
+          id="preview-img"
+          src=""
+          alt="Vista previa del diseño"
+          class="w-full h-full object-contain"
+        />
+      </div>
+
+      <!-- File info -->
+      <div class="flex-1 min-w-0">
+        <p id="file-name" class="text-sm lg:text-base font-semibold text-white truncate"></p>
+        <p id="file-size" class="text-xs lg:text-sm text-zinc-500 mt-0.5"></p>
+        <div class="flex items-center gap-1.5 mt-1">
+          <span id="placement-chip"
+            class="inline-flex items-center gap-1 text-xs font-semibold text-violet-300 uppercase tracking-wider"
+          >
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+            </svg>
+            <span id="placement-chip-text">Frente</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Change button -->
+      <button
+        id="change-file-btn"
+        type="button"
+        class="glass glass-hover shrink-0 px-4 py-2 rounded-xl text-sm font-medium text-zinc-300"
+        style="min-height: 40px;"
+      >
+        Cambiar
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  #dropzone:focus-visible {
+    outline: 2px solid oklch(0.65 0.22 270);
+    outline-offset: 4px;
+  }
+</style>
+
+<script>
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  const dropzone        = document.getElementById('dropzone')!;
+  const fileInput       = document.getElementById('design-file-input') as HTMLInputElement;
+  const uploadPrompt    = document.getElementById('upload-prompt')!;
+  const dragOverlay     = document.getElementById('drag-overlay')!;
+  const previewStrip    = document.getElementById('preview-strip')!;
+  const previewImg      = document.getElementById('preview-img') as HTMLImageElement;
+  const fileNameEl      = document.getElementById('file-name')!;
+  const fileSizeEl      = document.getElementById('file-size')!;
+  const changeBtn       = document.getElementById('change-file-btn')!;
+  const placementInput  = document.getElementById('placement-input') as HTMLInputElement | null;
+  const placementChip   = document.getElementById('placement-chip-text')!;
+
+  function formatBytes(n: number): string {
+    if (n < 1024)    return `${n} B`;
+    if (n < 1048576) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / 1048576).toFixed(1)} MB`;
+  }
+
+  function showPreview(file: File) {
+    const url = URL.createObjectURL(file);
+    previewImg.onload = () => {
+      fileNameEl.textContent = file.name;
+      fileSizeEl.textContent = formatBytes(file.size);
+
+      // Sync placement chip with what user selected in 3D viewer
+      const placement = placementInput?.value ?? 'front';
+      placementChip.textContent = placement === 'back' ? 'Espalda' : 'Frente';
+
+      // Collapse dropzone to minimal state
+      uploadPrompt.style.display = 'none';
+      dropzone.style.minHeight   = '0';
+      dropzone.style.border      = 'none';
+      dropzone.style.cursor      = 'default';
+      dropzone.style.background  = 'transparent';
+      dropzone.style.padding     = '0';
+
+      // Show file strip
+      previewStrip.classList.remove('hidden');
+      previewStrip.classList.add('flex');
+
+      // Push design image into the 3D overlay bridge
+      if (typeof (window as any).setDesign3DImage === 'function') {
+        (window as any).setDesign3DImage(url);
+      }
+    };
+    previewImg.src = url;
+  }
+
+  function resetUploader() {
+    fileInput.value            = '';
+    previewImg.src             = '';
+    previewImg.onload          = null;
+    uploadPrompt.style.display = '';
+    dropzone.style.minHeight   = '160px';
+    dropzone.style.border      = '';
+    dropzone.style.cursor      = 'pointer';
+    dropzone.style.background  = '';
+    dropzone.style.padding     = '';
+    previewStrip.classList.add('hidden');
+    previewStrip.classList.remove('flex');
+
+    // Clear 3D overlay
+    if (typeof (window as any).setDesign3DImage === 'function') {
+      (window as any).setDesign3DImage(null);
+    }
+  }
+
+  // ── Keep placement chip in sync when user switches FRENTE/ESPALDA ──────────
+  ['btn-front', 'btn-back'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', () => {
+      if (previewStrip.classList.contains('flex')) {
+        const placement = placementInput?.value ?? 'front';
+        placementChip.textContent = placement === 'back' ? 'Espalda' : 'Frente';
+      }
+    });
+  });
+
+  // ── Dropzone click ─────────────────────────────────────────────────────────
+  dropzone.addEventListener('click', () => {
+    if (!previewStrip.classList.contains('flex')) fileInput.click();
+  });
+  dropzone.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && !previewStrip.classList.contains('flex')) fileInput.click();
+  });
+
+  // ── File input change ──────────────────────────────────────────────────────
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (file) showPreview(file);
+  });
+
+  // ── Change button ──────────────────────────────────────────────────────────
+  changeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetUploader();
+  });
+
+  // ── Drag & Drop ────────────────────────────────────────────────────────────
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dragOverlay.classList.remove('hidden');
+    dragOverlay.classList.add('flex');
+    dropzone.style.borderColor = 'oklch(0.65 0.22 270 / 0.7)';
+  });
+
+  ['dragleave', 'dragend'].forEach(ev =>
+    dropzone.addEventListener(ev, () => {
+      dragOverlay.classList.add('hidden');
+      dragOverlay.classList.remove('flex');
+      dropzone.style.borderColor = '';
+    })
+  );
+
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragOverlay.classList.add('hidden');
+    dragOverlay.classList.remove('flex');
+    dropzone.style.borderColor = '';
+    const file = e.dataTransfer?.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+      showPreview(file);
+    }
+  });
+</script>

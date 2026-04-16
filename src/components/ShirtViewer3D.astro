@@ -1,0 +1,332 @@
+---
+/**
+ * ShirtViewer3D — Interactive 3D garment configurator
+ *
+ * Model path: /public/assets/models/camiseta.glb
+ * ➜ Replace this file with your custom t-shirt GLB to update the 3D view.
+ *
+ * Placement value is written to a hidden <input name="placement">
+ * which is submitted with the parent form and included in the WA message.
+ */
+---
+
+<!-- Hidden input: kept outside model-viewer so it's always in the form DOM -->
+<input type="hidden" id="placement-input" name="placement" value="front" />
+
+<div id="shirt-viewer-root" class="flex flex-col gap-3 lg:gap-4">
+
+  <!-- ── Header row ─────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-between px-1">
+    <div class="flex flex-col">
+      <p class="text-zinc-300 text-base lg:text-xl font-semibold leading-none">Configura tu prenda</p>
+      <p class="text-zinc-600 text-xs lg:text-sm mt-0.5">Rota el modelo · elige ubicación del diseño</p>
+    </div>
+    <!-- Live placement badge -->
+    <span
+      id="placement-badge"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300"
+      style="background: oklch(0.65 0.22 270 / 0.15); border: 1px solid oklch(0.65 0.22 270 / 0.4); color: oklch(0.78 0.18 270);"
+    >
+      <span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block"></span>
+      Frente
+    </span>
+  </div>
+
+  <!-- ── 3D viewer shell ─────────────────────────────────────────────── -->
+  <div
+    id="viewer-shell"
+    class="viewer-shell relative rounded-3xl overflow-hidden"
+    style="
+      border: 1px solid oklch(1 0 0 / 0.09);
+      /* Glow ring that matches the Otterock brand */
+      box-shadow:
+        0 0 0 1px oklch(0 0 0 / 0.5),
+        0 0 40px oklch(0.55 0.22 270 / 0.12),
+        0 0 80px oklch(0.55 0.22 270 / 0.06),
+        0 12px 40px oklch(0 0 0 / 0.4);
+    "
+  >
+
+    <!-- Ambient inner glow layer (decorative) -->
+    <div
+      class="absolute inset-0 pointer-events-none z-0"
+      style="
+        background: radial-gradient(ellipse 70% 50% at 50% 10%, oklch(0.55 0.22 270 / 0.08) 0%, transparent 70%);
+      "
+    ></div>
+
+    <!-- ── model-viewer ──────────────────────────────────────────────── -->
+    <model-viewer
+      id="shirt-model"
+      src="/assets/models/Camisa.glb"
+      alt="Vista 3D interactiva de la prenda"
+      camera-controls
+      touch-action="pan-y"
+      camera-orbit="0deg 75deg 105%"
+      min-camera-orbit="auto 30deg 80%"
+      max-camera-orbit="auto 110deg 140%"
+      field-of-view="28deg"
+      interpolation-decay="200"
+      environment-image="neutral"
+      shadow-intensity="1"
+      shadow-softness="0.8"
+      exposure="1.05"
+      style="
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: transparent;
+        --poster-color: transparent;
+        --progress-bar-color: oklch(0.65 0.22 270);
+        --progress-mask: transparent;
+      "
+    >
+      <!-- Hide default progress bar — we use our own -->
+      <div slot="progress-bar" style="display:none;"></div>
+
+      <!-- ── Custom loading poster ── -->
+      <div slot="poster" class="w-full h-full flex flex-col items-center justify-center gap-5"
+           style="background: radial-gradient(ellipse at center, oklch(0.15 0.02 265), oklch(0.10 0.01 262));">
+        <!-- Spinner -->
+        <div class="relative w-14 h-14 lg:w-20 lg:h-20">
+          <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="oklch(1 0 0 / 0.05)" stroke-width="5"/>
+          </svg>
+          <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80"
+               style="animation: spin-slow 1s linear infinite;">
+            <defs>
+              <linearGradient id="sgrad2" gradientTransform="rotate(90)">
+                <stop offset="0%" stop-color="oklch(0.65 0.22 270)"/>
+                <stop offset="100%" stop-color="oklch(0.7 0.2 310)"/>
+              </linearGradient>
+            </defs>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="url(#sgrad2)" stroke-width="5"
+                    stroke-linecap="round" stroke-dasharray="65 148"/>
+          </svg>
+          <!-- T-shirt icon in center -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg class="w-6 h-6 lg:w-8 lg:h-8 text-violet-400" viewBox="0 0 100 100" fill="currentColor" fill-opacity="0.7" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+              <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="text-center">
+          <p class="text-zinc-300 text-sm lg:text-base font-semibold">Cargando modelo 3D…</p>
+          <p class="text-zinc-600 text-xs mt-0.5">Otterock Digital Craftsmanship</p>
+        </div>
+      </div>
+    </model-viewer>
+
+    <!-- ── Interactive 2D Canvas (Drag & Drop Target) ──────── -->
+    <div
+      id="design-3d-overlay"
+      class="absolute"
+      style="
+        top: 38%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 35%;
+        aspect-ratio: 1;
+        border: 2px dashed transparent;
+        border-radius: 4px;
+        overflow: hidden;
+        transition: top 400ms cubic-bezier(0.4,0,0.2,1), border-color 200ms ease;
+        z-index: 5;
+      "
+    >
+      <!-- Draggable items will be appended here by PatchEditor -->
+    </div>
+
+    <!-- ── FRENTE / ESPALDA snap buttons ─────────────────────────────── -->
+    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:gap-3 z-10 px-4">
+      <button
+        id="btn-front"
+        type="button"
+        aria-pressed="true"
+        class="view-btn view-btn-active"
+        data-orbit="0deg 75deg 105%"
+        data-placement="front"
+        data-label="Frente"
+        data-overlay-top="38%"
+      >
+        <!-- Front icon -->
+        <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+        </svg>
+        FRENTE
+      </button>
+
+      <button
+        id="btn-back"
+        type="button"
+        aria-pressed="false"
+        class="view-btn"
+        data-orbit="180deg 75deg 105%"
+        data-placement="back"
+        data-label="Espalda"
+        data-overlay-top="36%"
+      >
+        <!-- Back icon — mirrored outline -->
+        <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+        </svg>
+        ESPALDA
+      </button>
+    </div>
+
+    <!-- ── Rotate hint chip ───────────────────────────────────────────── -->
+    <div class="absolute top-3 right-3 z-10 flex items-center gap-1.5 pointer-events-none"
+         style="background: oklch(1 0 0 / 0.06); backdrop-filter: blur(12px); border: 1px solid oklch(1 0 0 / 0.1); border-radius: 10px; padding: 0.3rem 0.65rem;">
+      <svg class="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      <span class="text-zinc-500 text-xs font-medium hidden sm:block">Arrastra para rotar</span>
+    </div>
+
+  </div><!-- end viewer-shell -->
+</div>
+
+<style>
+  /* ── Viewer shell height ── */
+  .viewer-shell {
+    background: radial-gradient(ellipse at center, oklch(0.15 0.02 265) 0%, oklch(0.10 0.01 262) 100%);
+    height: 280px;
+    transition: box-shadow 400ms ease;
+  }
+
+  @media (min-width: 640px)  { .viewer-shell { height: 340px; } }
+  @media (min-width: 1024px) { .viewer-shell { height: 450px; } }
+
+  /* Glow intensifies when hovered — gives the "alive" feeling */
+  .viewer-shell:hover {
+    box-shadow:
+      0 0 0 1px oklch(0 0 0 / 0.5),
+      0 0 60px oklch(0.55 0.22 270 / 0.2),
+      0 0 120px oklch(0.55 0.22 270 / 0.1),
+      0 16px 50px oklch(0 0 0 / 0.5) !important;
+  }
+
+  model-viewer {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Camera snap buttons ── */
+  .view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-sans, 'Inter', sans-serif);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid oklch(1 0 0 / 0.12);
+    background: oklch(0.08 0.005 260 / 0.7);
+    backdrop-filter: blur(20px) saturate(1.5);
+    color: oklch(0.75 0 0);
+    cursor: pointer;
+    transition: background 200ms ease, border-color 200ms ease, transform 180ms ease, box-shadow 200ms ease, color 200ms ease;
+    min-height: 36px;
+    user-select: none;
+  }
+
+  @media (min-width: 1024px) {
+    .view-btn {
+      font-size: 0.8rem;
+      padding: 0.55rem 1.25rem;
+      min-height: 42px;
+    }
+  }
+
+  .view-btn:hover {
+    background: oklch(1 0 0 / 0.1);
+    border-color: oklch(1 0 0 / 0.25);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  }
+
+  .view-btn:active {
+    transform: scale(0.95) translateY(0);
+  }
+
+  .view-btn-active {
+    background: oklch(0.65 0.22 270 / 0.22);
+    border-color: oklch(0.65 0.22 270 / 0.65);
+    color: white;
+    box-shadow: 0 0 24px oklch(0.65 0.22 270 / 0.35), inset 0 1px 0 oklch(1 0 0 / 0.12);
+  }
+
+  .view-btn-active:hover {
+    background: oklch(0.65 0.22 270 / 0.3);
+    border-color: oklch(0.65 0.22 270 / 0.8);
+  }
+</style>
+
+<script>
+  // ── DOM refs ──────────────────────────────────────────────────────────────
+  const modelEl        = document.getElementById('shirt-model') as any;
+  const btnFront       = document.getElementById('btn-front') as HTMLButtonElement;
+  const btnBack        = document.getElementById('btn-back')  as HTMLButtonElement;
+  const placementInput = document.getElementById('placement-input') as HTMLInputElement;
+  const placementBadge = document.getElementById('placement-badge') as HTMLElement;
+  const overlay3d      = document.getElementById('design-3d-overlay') as HTMLElement;
+  const viewBtns       = [btnFront, btnBack];
+
+  // ── Camera snap ────────────────────────────────────────────────────────────
+  function switchView(btn: HTMLButtonElement) {
+    const orbit      = btn.dataset.orbit      ?? '0deg 75deg 105%';
+    const placement  = btn.dataset.placement  ?? 'front';
+    const label      = btn.dataset.label      ?? 'Frente';
+    const overlayTop = btn.dataset.overlayTop ?? '38%';
+
+    // Snap camera (model-viewer handles the interpolation internally via interpolation-decay)
+    if (modelEl) {
+      modelEl.cameraOrbit = orbit;
+    }
+
+    // Sync hidden form input
+    placementInput.value = placement;
+
+    // Update placement badge text (keep the pulsing dot)
+    const dot = placementBadge.querySelector('span');
+    placementBadge.childNodes.forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
+    placementBadge.lastChild?.before
+      ? placementBadge.insertAdjacentText('beforeend', ' ' + label)
+      : (placementBadge.textContent = label);
+    // Simpler: just update a data-label span
+    const textSpan = placementBadge.querySelector('[data-badge-label]') as HTMLElement | null;
+    if (textSpan) textSpan.textContent = label;
+
+    // Move design overlay to correct position on the garment
+    overlay3d.style.top = overlayTop;
+
+    // Toggle button states
+    viewBtns.forEach(b => {
+      b.classList.remove('view-btn-active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('view-btn-active');
+    btn.setAttribute('aria-pressed', 'true');
+    // Dispatch event so PatchEditor knows the side changed
+    window.dispatchEvent(new CustomEvent('sideChanged', { detail: { side: placement } }));
+  }
+
+  btnFront.addEventListener('click', () => switchView(btnFront));
+  btnBack.addEventListener('click',  () => switchView(btnBack));
+
+  // ── Badge label patch: inject a span for clean text updates ───────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    // Wrap the text content of the badge in a span for easy updates
+    const badge = document.getElementById('placement-badge');
+    if (badge) {
+      const currentText = badge.textContent?.trim() ?? 'Frente';
+      badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block"></span><span data-badge-label>${currentText}</span>`;
+    }
+  });
+</script>

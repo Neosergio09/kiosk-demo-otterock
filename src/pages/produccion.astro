@@ -1,0 +1,132 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+// Fetch all orders
+const { data: orders, error } = await supabase
+  .from('orders')
+  .select('*')
+  .order('created_at', { ascending: false });
+
+if (error) {
+  console.error("Error fetching orders:", error);
+}
+
+// Helper to format date
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-CO', {
+    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  });
+}
+---
+
+<Layout title="Dashboard de Producción | Otterock">
+  <div class="min-h-screen bg-zinc-950 p-6 lg:p-12 text-zinc-300 font-sans selection:bg-violet-500/30">
+    <div class="max-w-6xl mx-auto flex flex-col gap-8">
+
+      <!-- Header -->
+      <div class="flex flex-col gap-2 border-b border-white/10 pb-6">
+        <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tighter mix-blend-plus-lighter">
+          ORDENES DE<br/><span class="text-violet-400">PRODUCCIÓN</span>
+        </h1>
+        <p class="text-zinc-500 font-medium">Panel de control de Otterock Kiosk</p>
+      </div>
+
+      <!-- Orders Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {orders && orders.length > 0 ? (
+          orders.map((order) => {
+            const data = order.customization_data || { patches: [], text: '' };
+            const patches = data.patches || [];
+            
+            return (
+              <div class="glass flex flex-col rounded-3xl overflow-hidden shadow-2xl shadow-black/50 border border-white/5 transition-transform hover:-translate-y-1 duration-300">
+                <!-- Order Header -->
+                <div class="bg-white/5 px-6 py-4 flex items-center justify-between border-b border-white/5">
+                  <div class="flex flex-col">
+                    <span class="text-white font-bold text-lg">#{order.id.split('-')[0]}</span>
+                    <span class="text-zinc-500 text-xs font-mono">{formatDate(order.created_at)}</span>
+                  </div>
+                  <span class="bg-violet-500/20 text-violet-300 border border-violet-500/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+                    Nuevo
+                  </span>
+                </div>
+
+                <!-- Order Body (Specs) -->
+                <div class="p-6 flex flex-col gap-4 flex-1">
+                  <div class="flex items-center gap-4 border-b border-white/5 pb-4">
+                    <div class="flex flex-col flex-1">
+                      <span class="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">Prenda</span>
+                      <span class="text-white font-bold uppercase">{order.garment_type}</span>
+                    </div>
+                    <div class="flex flex-col flex-1">
+                      <span class="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-1">Color</span>
+                      <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full border border-white/20" style={`background-color: ${order.garment_color === 'black' ? '#141414' : '#F5F5F5'}`}></div>
+                        <span class="text-white font-bold uppercase">{order.garment_color}</span>
+                      </div>
+                    </div>
+                    <div class="flex flex-col justify-center items-center h-10 w-10 bg-white/5 rounded-lg border border-white/10 shrink-0">
+                      <span class="text-white font-black">{order.size}</span>
+                    </div>
+                  </div>
+
+                  <!-- Customization Specs -->
+                  <div class="flex flex-col gap-3 pt-2">
+                    <p class="text-xs text-violet-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                      </svg>
+                      Personalización
+                    </p>
+                    
+                    <!-- Text Block -->
+                     {data.text && (
+                       <div class="bg-black/30 rounded-xl p-3 border border-white/5 flex items-start gap-3">
+                         <span class="text-xl">📝</span>
+                         <div class="flex flex-col">
+                           <span class="text-xs text-zinc-500 uppercase">Texto Solicitado</span>
+                           <span class="text-white font-bold tracking-wide">"{data.text}"</span>
+                         </div>
+                       </div>
+                     )}
+
+                     <!-- Patches List -->
+                     <div class="grid grid-cols-2 gap-2 mt-1">
+                       {patches.map((p: any) => (
+                         <div class="bg-black/20 rounded-lg p-2 border border-white/5 flex items-center gap-2">
+                           <span class="text-xl shrink-0">{p.icon}</span>
+                           <div class="flex flex-col min-w-0">
+                             <span class="text-[10px] text-zinc-500 uppercase truncate">{p.side === 'front' ? 'Frente' : 'Espalda'}</span>
+                             <span class="text-xs font-mono text-zinc-300">X:{Math.round(p.x)} Y:{Math.round(p.y)}</span>
+                           </div>
+                         </div>
+                       ))}
+                       {patches.length === 0 && (
+                         <span class="text-xs text-zinc-600 col-span-2 italic">Sin parches</span>
+                       )}
+                     </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div class="col-span-full py-20 flex flex-col items-center justify-center text-center opacity-50">
+             <h2 class="text-2xl font-bold text-white mb-2">No hay pedidos pendientes 🐾</h2>
+             <p class="text-zinc-400">Las solicitudes del kiosk aparecerán aquí.</p>
+          </div>
+        )}
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .glass {
+      background: oklch(0.18 0.01 260 / 0.4);
+      backdrop-filter: blur(24px) saturate(1.8);
+    }
+  </style>
+</Layout>

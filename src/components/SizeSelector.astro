@@ -1,0 +1,83 @@
+---
+interface SizeOption {
+  id: string;
+  label: string;
+}
+
+const sizes: SizeOption[] = [
+  { id: 'S', label: 'S' },
+  { id: 'M', label: 'M' },
+  { id: 'L', label: 'L' },
+  { id: 'XL', label: 'XL' },
+];
+---
+
+<div class="flex flex-col gap-4 lg:gap-6">
+  <p class="text-zinc-400 text-lg lg:text-2xl font-medium px-1">Talla</p>
+
+  <div
+    id="size-selector"
+    role="radiogroup"
+    aria-label="Talla de prenda"
+    class="grid grid-cols-4 gap-3 lg:gap-5"
+  >
+    {sizes.map((s, i) => (
+      <label
+        for={`size-${s.id}`}
+        class="size-card glass glass-hover rounded-xl lg:rounded-2xl cursor-pointer select-none animate-fadeInUp flex items-center justify-center"
+        style={`animation-delay: ${i * 0.1}s; min-height: 56px;`}
+        data-value={s.id}
+      >
+        <input
+          type="radio"
+          id={`size-${s.id}`}
+          name="size"
+          value={s.id}
+          class="sr-only"
+          required
+        />
+        <span class="text-lg lg:text-2xl font-bold text-zinc-300 transition-colors duration-200">{s.label}</span>
+      </label>
+    ))}
+  </div>
+</div>
+
+<style>
+  .size-card {
+    border: 1px solid oklch(1 0 0 / 0.07);
+    transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease;
+  }
+
+  @media (min-width: 1024px) {
+    .size-card {
+      min-height: 72px !important;
+    }
+    .size-card:hover {
+      transform: scale(1.02);
+      border-color: oklch(1 0 0 / 0.13);
+    }
+  }
+
+  /* ── Selected state ── */
+  .size-card[data-selected="true"] {
+    background: oklch(0.65 0.22 270 / 0.12);
+    border-color: oklch(0.65 0.22 270 / 0.5);
+    box-shadow: 0 0 30px oklch(0.65 0.22 270 / 0.2);
+  }
+
+  .size-card[data-selected="true"] span {
+    color: white;
+  }
+</style>
+
+<script>
+  const sizeCards = document.querySelectorAll<HTMLElement>('.size-card');
+  sizeCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      sizeCards.forEach(c => c.removeAttribute('data-selected'));
+      card.setAttribute('data-selected', 'true');
+      const radio = card.querySelector<HTMLInputElement>('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
+</script>

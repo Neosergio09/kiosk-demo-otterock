@@ -1,0 +1,114 @@
+---
+interface ColorOption {
+  id: string;
+  label: string;
+  hex: string;
+  textClass: string;
+  borderColor?: string;
+}
+
+const colors: ColorOption[] = [
+  { id: 'white',        label: 'Blanco',       hex: '#F5F5F5', textClass: 'text-zinc-900', borderColor: '#D4D4D4' },
+  { id: 'black',        label: 'Negro',        hex: '#141414', textClass: 'text-white',    borderColor: '#3f3f46' },
+];
+---
+
+<div class="flex flex-col gap-4 lg:gap-6">
+  <p class="text-zinc-400 text-lg lg:text-2xl font-medium px-1">Elige el color</p>
+
+  <!--
+    Mobile : 5 swatches in a scrollable row, slightly smaller
+    Totem  : same row but larger swatches with labels
+  -->
+  <div
+    id="color-selector"
+    role="radiogroup"
+    aria-label="Color de prenda"
+    class="flex items-end gap-3 lg:gap-5 overflow-x-auto pb-1"
+    style="-ms-overflow-style:none; scrollbar-width:none;"
+  >
+    {colors.map((c, i) => (
+      <label
+        for={`color-${c.id}`}
+        class="color-swatch-label shrink-0 flex flex-col items-center gap-2 lg:gap-3 cursor-pointer group"
+        data-value={c.id}
+        style={`animation-delay: ${i * 0.07}s`}
+      >
+        <input
+          type="radio"
+          id={`color-${c.id}`}
+          name="color"
+          value={c.id}
+          class="sr-only"
+          required
+        />
+
+        <!-- Gradient selection ring wrapper -->
+        <div class="color-swatch-ring relative rounded-full p-1 transition-all duration-300 swatch-ring-size">
+          <!-- Actual color circle -->
+          <div
+            class="w-full h-full rounded-full transition-transform duration-300 group-hover:scale-105 group-active:scale-90 flex items-center justify-center"
+            style={`
+              background: ${c.hex};
+              ${c.borderColor ? `box-shadow: inset 0 0 0 2px ${c.borderColor};` : ''}
+            `}
+          >
+            <!-- Checkmark -->
+            <svg
+              class={`color-check opacity-0 scale-50 transition-all duration-200 ${c.textClass} swatch-check-size`}
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Label — hidden on very small screens, shown sm+ -->
+        <span class="color-swatch-label-text hidden sm:block lg:block text-sm lg:text-lg font-semibold text-zinc-500 group-hover:text-zinc-200 transition-colors duration-200 text-center whitespace-nowrap">
+          {c.label}
+        </span>
+      </label>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Swatch sizes: smaller on mobile, larger on totem */
+  .swatch-ring-size   { width: 3.5rem;  height: 3.5rem;  }
+  .swatch-check-size  { width: 1.5rem;  height: 1.5rem;  }
+
+  @media (min-width: 1024px) {
+    .swatch-ring-size  { width: 6rem;   height: 6rem;    }
+    .swatch-check-size { width: 2rem;   height: 2rem;    }
+  }
+
+  .color-swatch-ring {
+    background: transparent;
+  }
+
+  label[data-selected="true"] .color-swatch-ring {
+    background: linear-gradient(135deg, oklch(0.65 0.22 270), oklch(0.7 0.2 310));
+    box-shadow: 0 0 20px oklch(0.65 0.22 270 / 0.55);
+  }
+
+  label[data-selected="true"] .color-check {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+  }
+
+  label[data-selected="true"] .color-swatch-label-text {
+    color: white;
+  }
+</style>
+
+<script>
+  const labels = document.querySelectorAll<HTMLElement>('#color-selector label');
+  labels.forEach((label) => {
+    label.addEventListener('click', () => {
+      labels.forEach(l => l.removeAttribute('data-selected'));
+      label.setAttribute('data-selected', 'true');
+      const radio = label.querySelector<HTMLInputElement>('input[type="radio"]');
+      if (radio) radio.checked = true;
+    });
+  });
+</script>
