@@ -13,7 +13,7 @@ const sizes: SizeOption[] = [
 ---
 
 <div class="flex flex-col gap-4 lg:gap-6">
-  <p class="text-zinc-400 text-lg lg:text-2xl font-medium px-1">Talla</p>
+  <p class="text-lg lg:text-2xl font-medium px-1" style="color:#5F6368;">Talla</p>
 
   <div
     id="size-selector"
@@ -36,16 +36,18 @@ const sizes: SizeOption[] = [
           class="sr-only"
           required
         />
-        <span class="text-lg lg:text-2xl font-bold text-zinc-300 transition-colors duration-200">{s.label}</span>
+        <span class="size-label text-lg lg:text-2xl font-bold transition-colors duration-200" style="color:#5F6368;">{s.label}</span>
       </label>
     ))}
   </div>
 </div>
 
 <style>
+  /* Size card base — Material white card */
   .size-card {
-    border: 1px solid oklch(1 0 0 / 0.07);
-    transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease;
+    border: 1px solid #DADCE0;
+    background: #FFFFFF;
+    transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 180ms ease;
   }
 
   @media (min-width: 1024px) {
@@ -54,19 +56,21 @@ const sizes: SizeOption[] = [
     }
     .size-card:hover {
       transform: scale(1.02);
-      border-color: oklch(1 0 0 / 0.13);
+      border-color: #C5C8CC;
+      box-shadow: 0 2px 8px rgba(60,64,67,0.14);
     }
   }
 
-  /* ── Selected state ── */
+  /* ── Selected state — Google Blue tint ── */
   .size-card[data-selected="true"] {
-    background: oklch(0.65 0.22 270 / 0.12);
-    border-color: oklch(0.65 0.22 270 / 0.5);
-    box-shadow: 0 0 30px oklch(0.65 0.22 270 / 0.2);
+    background: #E8F0FE;
+    border-color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66,133,244,0.15);
   }
 
-  .size-card[data-selected="true"] span {
-    color: white;
+  .size-card[data-selected="true"] .size-label {
+    color: #4285F4;
+    font-weight: 800;
   }
 </style>
 

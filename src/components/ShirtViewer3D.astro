@@ -18,40 +18,39 @@
   <!-- ── Header row ─────────────────────────────────────────────────── -->
   <div class="flex items-center justify-between px-1">
     <div class="flex flex-col">
-      <p class="text-zinc-300 text-base lg:text-xl font-semibold leading-none">Configura tu prenda</p>
-      <p class="text-zinc-600 text-xs lg:text-sm mt-0.5">Rota el modelo · elige ubicación del diseño</p>
+      <p class="text-base lg:text-xl font-semibold leading-none" style="color:#202124;">Configura tu prenda</p>
+      <p class="text-xs lg:text-sm mt-0.5" style="color:#80868B;">Rota el modelo · elige ubicación del diseño</p>
     </div>
     <!-- Live placement badge -->
+    <!-- Live placement badge — Google Blue -->
     <span
       id="placement-badge"
       class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300"
-      style="background: oklch(0.65 0.22 270 / 0.15); border: 1px solid oklch(0.65 0.22 270 / 0.4); color: oklch(0.78 0.18 270);"
+      style="background: rgba(66,133,244,0.10); border: 1px solid rgba(66,133,244,0.35); color: #4285F4;"
     >
-      <span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block"></span>
+      <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background:#4285F4;"></span>
       Frente
     </span>
   </div>
 
   <!-- ── 3D viewer shell ─────────────────────────────────────────────── -->
+  <!-- ── 3D viewer shell — light Material stage ─────────────────── -->
   <div
     id="viewer-shell"
     class="viewer-shell relative rounded-3xl overflow-hidden"
     style="
-      border: 1px solid oklch(1 0 0 / 0.09);
-      /* Glow ring that matches the Otterock brand */
+      border: 1px solid #DADCE0;
       box-shadow:
-        0 0 0 1px oklch(0 0 0 / 0.5),
-        0 0 40px oklch(0.55 0.22 270 / 0.12),
-        0 0 80px oklch(0.55 0.22 270 / 0.06),
-        0 12px 40px oklch(0 0 0 / 0.4);
+        0 1px 4px rgba(60,64,67,0.12),
+        0 8px 24px rgba(60,64,67,0.08);
     "
   >
 
-    <!-- Ambient inner glow layer (decorative) -->
+    <!-- Subtle top-center gradient wash to add depth on the light stage -->
     <div
       class="absolute inset-0 pointer-events-none z-0"
       style="
-        background: radial-gradient(ellipse 70% 50% at 50% 10%, oklch(0.55 0.22 270 / 0.08) 0%, transparent 70%);
+        background: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(66,133,244,0.05) 0%, transparent 70%);
       "
     ></div>
 
@@ -77,42 +76,42 @@
         display: block;
         background: transparent;
         --poster-color: transparent;
-        --progress-bar-color: oklch(0.65 0.22 270);
+        --progress-bar-color: #4285F4;
         --progress-mask: transparent;
       "
     >
       <!-- Hide default progress bar — we use our own -->
       <div slot="progress-bar" style="display:none;"></div>
 
-      <!-- ── Custom loading poster ── -->
+      <!-- ── Custom loading poster — light background ── -->
       <div slot="poster" class="w-full h-full flex flex-col items-center justify-center gap-5"
-           style="background: radial-gradient(ellipse at center, oklch(0.15 0.02 265), oklch(0.10 0.01 262));">
-        <!-- Spinner -->
+           style="background: linear-gradient(160deg, #F8F9FA 0%, #EEF2FF 100%);">
+        <!-- Spinner — Google Blue -->
         <div class="relative w-14 h-14 lg:w-20 lg:h-20">
           <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="oklch(1 0 0 / 0.05)" stroke-width="5"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#DADCE0" stroke-width="5"/>
           </svg>
           <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80"
                style="animation: spin-slow 1s linear infinite;">
             <defs>
               <linearGradient id="sgrad2" gradientTransform="rotate(90)">
-                <stop offset="0%" stop-color="oklch(0.65 0.22 270)"/>
-                <stop offset="100%" stop-color="oklch(0.7 0.2 310)"/>
+                <stop offset="0%"   stop-color="#4285F4"/>
+                <stop offset="100%" stop-color="#34A853"/>
               </linearGradient>
             </defs>
             <circle cx="40" cy="40" r="34" fill="none" stroke="url(#sgrad2)" stroke-width="5"
                     stroke-linecap="round" stroke-dasharray="65 148"/>
           </svg>
-          <!-- T-shirt icon in center -->
+          <!-- T-shirt icon in center — Google Blue -->
           <div class="absolute inset-0 flex items-center justify-center">
-            <svg class="w-6 h-6 lg:w-8 lg:h-8 text-violet-400" viewBox="0 0 100 100" fill="currentColor" fill-opacity="0.7" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+            <svg class="w-6 h-6 lg:w-8 lg:h-8" style="color:#4285F4;" viewBox="0 0 100 100" fill="currentColor" fill-opacity="0.6" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
               <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z"/>
             </svg>
           </div>
         </div>
         <div class="text-center">
-          <p class="text-zinc-300 text-sm lg:text-base font-semibold">Cargando modelo 3D…</p>
-          <p class="text-zinc-600 text-xs mt-0.5">Otterock Digital Craftsmanship</p>
+          <p class="text-sm lg:text-base font-semibold" style="color:#5F6368;">Cargando modelo 3D…</p>
+          <p class="text-xs mt-0.5" style="color:#80868B;">Otterock Digital Craftsmanship</p>
         </div>
       </div>
     </model-viewer>
@@ -174,36 +173,36 @@
       </button>
     </div>
 
-    <!-- ── Rotate hint chip ───────────────────────────────────────────── -->
+    <!-- ── Rotate hint chip — Material light ──────────────────────── -->
     <div class="absolute top-3 right-3 z-10 flex items-center gap-1.5 pointer-events-none"
-         style="background: oklch(1 0 0 / 0.06); backdrop-filter: blur(12px); border: 1px solid oklch(1 0 0 / 0.1); border-radius: 10px; padding: 0.3rem 0.65rem;">
-      <svg class="w-3 h-3 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+         style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid #DADCE0; border-radius: 10px; padding: 0.3rem 0.65rem; box-shadow: 0 1px 4px rgba(60,64,67,0.10);">
+      <svg class="w-3 h-3" style="color:#5F6368;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
       </svg>
-      <span class="text-zinc-500 text-xs font-medium hidden sm:block">Arrastra para rotar</span>
+      <span class="text-xs font-medium hidden sm:block" style="color:#5F6368;">Arrastra para rotar</span>
     </div>
 
   </div><!-- end viewer-shell -->
 </div>
 
 <style>
-  /* ── Viewer shell height ── */
+  /* ── Viewer shell height & light stage background ── */
   .viewer-shell {
-    background: radial-gradient(ellipse at center, oklch(0.15 0.02 265) 0%, oklch(0.10 0.01 262) 100%);
+    /* Google Cloud–style light stage: near-white with a subtle blue tint */
+    background: linear-gradient(160deg, #F8F9FA 0%, #EEF2FF 100%);
     height: 280px;
-    transition: box-shadow 400ms ease;
+    transition: box-shadow 300ms ease, border-color 300ms ease;
   }
 
   @media (min-width: 640px)  { .viewer-shell { height: 340px; } }
   @media (min-width: 1024px) { .viewer-shell { height: 450px; } }
 
-  /* Glow intensifies when hovered — gives the "alive" feeling */
+  /* Subtle elevation on hover */
   .viewer-shell:hover {
+    border-color: #C5C8CC !important;
     box-shadow:
-      0 0 0 1px oklch(0 0 0 / 0.5),
-      0 0 60px oklch(0.55 0.22 270 / 0.2),
-      0 0 120px oklch(0.55 0.22 270 / 0.1),
-      0 16px 50px oklch(0 0 0 / 0.5) !important;
+      0 2px 8px rgba(60,64,67,0.16),
+      0 12px 32px rgba(60,64,67,0.10) !important;
   }
 
   model-viewer {
@@ -214,25 +213,26 @@
     z-index: 1;
   }
 
-  /* ── Camera snap buttons ── */
+  /* ── Camera snap buttons — Material pill style ── */
   .view-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-family: var(--font-sans, 'Inter', sans-serif);
+    font-family: var(--font-sans, 'Google Sans', 'Inter', sans-serif);
     font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     padding: 0.45rem 1rem;
     border-radius: 9999px;
-    border: 1px solid oklch(1 0 0 / 0.12);
-    background: oklch(0.08 0.005 260 / 0.7);
-    backdrop-filter: blur(20px) saturate(1.5);
-    color: oklch(0.75 0 0);
+    border: 1px solid #DADCE0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    color: #5F6368;
     cursor: pointer;
-    transition: background 200ms ease, border-color 200ms ease, transform 180ms ease, box-shadow 200ms ease, color 200ms ease;
+    transition: background 180ms ease, border-color 180ms ease, transform 160ms ease, box-shadow 180ms ease, color 180ms ease;
     min-height: 36px;
     user-select: none;
+    box-shadow: 0 1px 3px rgba(60,64,67,0.10);
   }
 
   @media (min-width: 1024px) {
@@ -244,27 +244,28 @@
   }
 
   .view-btn:hover {
-    background: oklch(1 0 0 / 0.1);
-    border-color: oklch(1 0 0 / 0.25);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    background: #FFFFFF;
+    border-color: #C5C8CC;
+    color: #202124;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(60,64,67,0.18);
   }
 
   .view-btn:active {
-    transform: scale(0.95) translateY(0);
+    transform: scale(0.97) translateY(0);
   }
 
+  /* Active (selected) — Google Blue tint */
   .view-btn-active {
-    background: oklch(0.65 0.22 270 / 0.22);
-    border-color: oklch(0.65 0.22 270 / 0.65);
-    color: white;
-    box-shadow: 0 0 24px oklch(0.65 0.22 270 / 0.35), inset 0 1px 0 oklch(1 0 0 / 0.12);
+    background: rgba(66,133,244,0.10);
+    border-color: rgba(66,133,244,0.50);
+    color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66,133,244,0.12);
   }
 
   .view-btn-active:hover {
-    background: oklch(0.65 0.22 270 / 0.3);
-    border-color: oklch(0.65 0.22 270 / 0.8);
+    background: rgba(66,133,244,0.15);
+    border-color: rgba(66,133,244,0.70);
   }
 </style>
 
@@ -326,7 +327,7 @@
     const badge = document.getElementById('placement-badge');
     if (badge) {
       const currentText = badge.textContent?.trim() ?? 'Frente';
-      badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse inline-block"></span><span data-badge-label>${currentText}</span>`;
+      badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background:#4285F4;"></span><span data-badge-label>${currentText}</span>`;
     }
   });
 </script>

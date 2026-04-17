@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import BrandAnimation from '../components/BrandAnimation.astro';
 
 interface Props {
   title?: string;
@@ -15,74 +16,83 @@ const { title = 'Otterock — Personalización', step = 1 } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content="Personaliza tu prenda con Otterock" />
-    <meta name="theme-color" content="#09090b" />
+    <meta name="description" content="Personaliza tu prenda con Otterock — Google Cloud Day 2026" />
+    <!-- Light mode: white chrome on mobile browsers -->
+    <meta name="theme-color" content="#FFFFFF" />
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Google Sans + Inter for body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <!-- model-viewer web component (3D garment visualization) -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
   </head>
 
   <!--
-    html: full-screen deep radial background for the PC "stage"
-    body: centers the glassmorphism kiosk card on wide screens
+    body: centers the Material kiosk card on wide screens over a white dot-grid background
   -->
-  <body class="kiosk-body text-white">
+  <body class="kiosk-body text-[#202124]">
 
-    <!-- ── Full-viewport background stage (visible on desktop beside the card) -->
+    <!-- ── Full-viewport dot-grid background stage (Google Cloud style) ── -->
     <div class="page-stage" aria-hidden="true"></div>
 
-    <!-- ── Deep ambient orbs ── -->
-    <div
-      aria-hidden="true"
-      class="pointer-events-none fixed inset-0 z-0"
-      style="
-        background:
-          radial-gradient(ellipse 55vw 45vh at 12% 8%,  oklch(0.55 0.22 270 / 0.18) 0%, transparent 65%),
-          radial-gradient(ellipse 45vw 40vh at 86% 90%, oklch(0.65 0.20 310 / 0.14) 0%, transparent 65%);
-      "
-    ></div>
+    <!-- ── Ambient Google Corner Focus Bulbs & LED Perimeter ── -->
+    <div id="energy-perimeter" class="fixed inset-0 pointer-events-none -z-20 overflow-hidden">
+      
+      <!-- 15px LED Strip + inner soft-white fade overlay -->
+      <div class="led-mask-shell absolute inset-0">
+        <div class="led-spinner"></div>
+      </div>
+      <!-- Soft inset white vignette: blends the 15px LED into the white content area -->
+      <div class="led-inner-fade absolute" style="inset:0; pointer-events:none; box-shadow: inset 0 0 28px 14px #ffffff; z-index:1;"></div>
+      
+      <!-- 4 Sync'd Corner Focus Bulbs -->
+      <div class="focus-bulb bulb-tl"></div>
+      <div class="focus-bulb bulb-tr"></div>
+      <div class="focus-bulb bulb-bl"></div>
+      <div class="focus-bulb bulb-br"></div>
 
-    <!-- ── Noise film ── -->
-    <div
-      aria-hidden="true"
-      class="pointer-events-none fixed inset-0 z-0 opacity-[0.022]"
-      style="background-image:url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E);"
-    ></div>
+    </div>
 
     <!--
       ── The Kiosk Card Shell ──────────────────────────────────────────
       Mobile   : full-width, natural height, no border
-      ≥1024px  : glassmorphism card, max-width 1120px, centered with margin
-                 Subtle border + inner glow lifts it off the background
+      ≥1024px  : Material Design card, max-width 1180px, elevated
     -->
     <div class="kiosk-card">
 
-      <!-- Header -->
+      <!-- ── Header ─────────────────────────────────────────────────── -->
       <header class="relative z-10 flex items-center justify-between px-5 sm:px-8 lg:px-10 pt-6 pb-4 lg:pt-8 lg:pb-6 shrink-0">
-        <div class="flex flex-col">
-          <span class="text-3xl lg:text-4xl font-black tracking-tight gradient-text leading-none">OTTEROCK</span>
-          <span class="text-xs lg:text-base text-zinc-500 font-medium mt-0.5">Personalización de Prendas</span>
-        </div>
-        <!-- Step indicator -->
+          <!-- Brand Animation and Name -->
+          <div class="flex items-center gap-3 lg:gap-4">
+            <BrandAnimation />
+            <div class="flex flex-col justify-center">
+              <div class="flex items-center gap-2">
+                <!-- Gemini specific powered-by tag (animated) -->
+                <span class="gemini-tag text-[10px] lg:text-xs font-bold tracking-widest uppercase" style="color:#fbbc04;">Powered by Gemini 3.1</span>
+              </div>
+              <span class="text-xs lg:text-sm font-medium" style="color:#5F6368;">Personalización de Prendas</span>
+            </div>
+          </div>
+
+        <!-- Step indicator — Material style -->
         <div class="flex items-center gap-2 lg:gap-3" aria-label="Progreso del pedido">
           {[1, 2, 3].map((s) => (
-            <div class={`flex items-center gap-2 lg:gap-3 transition-opacity duration-300 ${s > step ? 'opacity-25' : ''}`}>
+            <div class={`flex items-center gap-2 lg:gap-3 transition-opacity duration-300 ${s > step ? 'opacity-30' : ''}`}>
               <div
                 class={`
                   w-7 h-7 lg:w-9 lg:h-9 rounded-full flex items-center justify-center
                   text-xs font-bold transition-all duration-500
-                  ${s < step  ? 'gradient-brand text-white'
-                  : s === step ? 'gradient-brand text-white glow-brand animate-pulse-glow'
-                  :              'glass text-zinc-400'}
+                  ${s < step  ? 'text-white'
+                  : s === step ? 'text-white animate-pulse-glow'
+                  :              'border border-[#DADCE0] text-[#5F6368] bg-white'}
                 `}
+                style={s <= step ? 'background:#4285F4;' : ''}
               >
                 {s < step ? '✓' : s}
               </div>
               {s < 3 && (
-                <div class={`w-5 lg:w-10 h-0.5 rounded-full transition-all duration-500 ${s < step ? 'gradient-brand opacity-80' : 'bg-zinc-700'}`}></div>
+                <div class={`w-5 lg:w-10 h-0.5 rounded-full transition-all duration-500 ${s < step ? 'bg-[#4285F4] opacity-80' : 'bg-[#DADCE0]'}`}></div>
               )}
             </div>
           ))}
@@ -90,43 +100,90 @@ const { title = 'Otterock — Personalización', step = 1 } = Astro.props;
       </header>
 
       <!-- Divider -->
-      <div class="mx-5 lg:mx-10 border-t border-white/5"></div>
+      <div class="mx-5 lg:mx-10 border-t border-[#DADCE0]"></div>
 
       <!-- Main slot -->
       <main class="relative z-10 flex-1">
         <slot />
       </main>
 
-      <!-- Footer -->
-      <footer class="relative z-10 shrink-0 px-5 lg:px-10 py-4 lg:py-6 flex items-center justify-between border-t border-white/5">
-        <span class="text-zinc-600 text-xs lg:text-base">Toca para empezar</span>
-        <span class="text-zinc-700 text-xs lg:text-base font-medium">otterock.com</span>
+      <!-- ── Kiosk operational footer ─────────────────────────────── -->
+      <div class="mx-5 lg:mx-10 border-t border-[#DADCE0]"></div>
+      <footer class="relative z-10 shrink-0 px-5 lg:px-10 py-3 lg:py-4 flex items-center justify-between">
+        <span style="color:#80868B;" class="text-xs lg:text-sm">Toca para empezar</span>
+        <span style="color:#BBBFC4;" class="text-xs lg:text-sm font-medium">otterock.com</span>
       </footer>
+
+      <!-- ── Partner & Event Footer ──────────────────────────────── -->
+      <div class="partner-footer">
+
+        <!-- Partner logos / names in grayscale -->
+        <div class="partner-names">
+          <span class="partner-name">Otterock</span>
+          <span class="partner-dot" aria-hidden="true">·</span>
+          <span class="partner-name">Nine</span>
+          <span class="partner-dot" aria-hidden="true">·</span>
+          <span class="partner-name">Cuarentaydos</span>
+        </div>
+
+        <!-- Google Cloud Day badge -->
+        <div class="event-badge" aria-label="Google Cloud Day, 27 de mayo de 2026">
+          <!-- Google Cloud icon (SVG cloud) -->
+          <svg class="cloud-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+              fill="url(#gcl-grad)" />
+            <defs>
+              <linearGradient id="gcl-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#4285F4"/>
+                <stop offset="50%"  stop-color="#34A853"/>
+                <stop offset="100%" stop-color="#FBBC04"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="badge-text">Google Cloud Day</span>
+          <span class="badge-date">May 27, 2026</span>
+        </div>
+
+      </div><!-- end .partner-footer -->
 
     </div><!-- end .kiosk-card -->
   </body>
 </html>
 
 <style>
-  /* ── Base page background ── */
+  /* ── White page background ── */
   html {
-    background: radial-gradient(circle at 50% 40%, oklch(0.13 0.015 265), oklch(0.07 0.005 260) 70%);
+    background: #FFFFFF;
     min-height: 100vh;
   }
 
-  /* ── A subtle grid pattern on the BG for PC depth ── */
+  /* ── Dot-grid background stage (Google Cloud style) ── */
   .page-stage {
     position: fixed;
     inset: 0;
     z-index: 0;
-    background-image:
-      linear-gradient(oklch(1 0 0 / 0.025) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(1 0 0 / 0.025) 1px, transparent 1px);
-    background-size: 48px 48px;
+    /* Subtle dot pattern — dots at every 28px, 1.5px radius */
+    background-image: radial-gradient(circle, #DADCE0 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
     pointer-events: none;
+    /* Very light so it's only barely visible on white */
+    opacity: 0.6;
   }
 
-  /* ── Body centers the card ── */
+  /* ── Animated Gemini Tag ── */
+  .gemini-tag {
+    opacity: 0;
+    /* 20s loop matching the brand morphing svg */
+    animation: gemini-fade 20s infinite;
+  }
+
+  @keyframes gemini-fade {
+    0%, 75% { opacity: 0; transform: translateY(4px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-4px); }
+  }
+
+  /* ── Body centers the card on wide screens ── */
   .kiosk-body {
     min-height: 100vh;
     display: flex;
@@ -134,9 +191,11 @@ const { title = 'Otterock — Personalización', step = 1 } = Astro.props;
     justify-content: center;
     position: relative;
     z-index: 1;
+    /* Offset content from the 15px LED border on mobile */
+    padding: 15px;
   }
 
-  /* ── Mobile: flush, full-width ── */
+  /* ── Mobile: flush, full-width white card ── */
   .kiosk-card {
     position: relative;
     z-index: 1;
@@ -144,13 +203,14 @@ const { title = 'Otterock — Personalización', step = 1 } = Astro.props;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: oklch(0.10 0.008 262);
+    background: #FFFFFF;
   }
 
-  /* ── Desktop: glassmorphism card floating on the dark stage ── */
+  /* ── Desktop: elevated Material card floating on the dot-grid ── */
   @media (min-width: 1024px) {
     .kiosk-body {
-      padding: 2rem 1.5rem 3rem;
+      /* Large desktop: enough breathing room for the 15px LED strip */
+      padding: calc(2rem + 15px) calc(1.5rem + 15px) calc(3rem + 15px);
       align-items: flex-start;
     }
 
@@ -159,15 +219,272 @@ const { title = 'Otterock — Personalización', step = 1 } = Astro.props;
       max-width: 1180px;
       min-height: auto;
       border-radius: 1.75rem;
-      /* Glassmorphism */
-      background: oklch(0.12 0.01 262 / 0.88);
-      backdrop-filter: blur(40px) saturate(1.5);
-      border: 1px solid oklch(1 0 0 / 0.1);
+      background: #FFFFFF;
+      border: 1px solid #DADCE0;
       box-shadow:
-        0 0 0 1px oklch(0 0 0 / 0.4),
-        0 24px 80px oklch(0 0 0 / 0.55),
-        inset 0 1px 0 oklch(1 0 0 / 0.08),
-        0 0 120px oklch(0.55 0.22 270 / 0.08);
+        0 1px 3px rgba(60, 64, 67, 0.12),
+        0 8px 40px rgba(60, 64, 67, 0.10),
+        0 24px 64px rgba(60, 64, 67, 0.06);
     }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     PARTNER & EVENT FOOTER
+  ═══════════════════════════════════════════════════ */
+  .partner-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1.5rem;
+    border-top: 1px solid #F1F3F4;
+  }
+
+  @media (min-width: 640px) {
+    .partner-footer {
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 1rem 2.5rem 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .partner-footer {
+      padding: 1.25rem 2.5rem 2rem;
+    }
+  }
+
+  /* Partner name list */
+  .partner-names {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .partner-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #80868B;   /* grayscale — neutral, unobtrusive */
+    transition: color 200ms ease;
+  }
+
+  .partner-name:hover {
+    color: #5F6368;
+  }
+
+  .partner-dot {
+    color: #DADCE0;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  /* Google Cloud Day badge */
+  .event-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 9999px;
+    border: 1px solid #DADCE0;
+    background: #F8F9FA;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+  }
+
+  .event-badge:hover {
+    border-color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12);
+  }
+
+  .cloud-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .badge-text {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #5F6368;
+  }
+
+  .badge-date {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #80868B;
+    padding-left: 0.25rem;
+    border-left: 1px solid #DADCE0;
+    margin-left: 0.1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .partner-name  { font-size: 0.82rem; }
+    .badge-text,
+    .badge-date    { font-size: 0.8rem; }
+    .cloud-icon    { width: 1.1rem; height: 1.1rem; }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════════════════════════════════
+     ADVANCED PERIMETER LED & CORNER BULBS
+     [FINAL] Top-Center Clockwise (20s)
+     T=2.5s (12.5%) TR | T=7.5s (37.5%) BR
+     T=12.5s (62.5%) BL | T=17.5s (87.5%) TL
+  ═══════════════════════════════════════════════════════════════════════════════════════════════════ */
+
+  /* 15px ring shell — mask punches out the center, inset shadow softens inner edge */
+  .led-mask-shell {
+    padding: 15px;
+    /* Carve the inner rectangle transparent so only the 15px ring is visible */
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    /*
+     * SOFT INNER EDGE TECHNIQUE:
+     * We need a separate overlay div to place an inset white shadow because
+     * -webkit-mask and box-shadow cannot coexist on the same element.
+     * SOLUTION: The .led-inner-fade sibling (see HTML) sits on top of the
+     * content area and casts a white inset shadow outward toward the LED strip.
+     */
+    animation: neon-glow-shift 20s linear infinite;
+  }
+
+  /* Inset white vignette that sits above the content, fading the LED into the white bg */
+  .led-inner-fade {
+    position: absolute;
+    inset: 15px; /* inset by the LED thickness */
+    pointer-events: none;
+    box-shadow: inset 0 0 28px 14px #ffffff;
+    z-index: 1; /* above content but below interactive ui */
+    border-radius: inherit;
+  }
+
+  /* The spinning conic gradient — 0deg = 12 o'clock = Top-Center */
+  .led-spinner {
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      var(--color-google-blue)    0deg,
+      var(--color-google-red)    90deg,
+      var(--color-google-yellow) 180deg,
+      var(--color-google-green)  270deg,
+      var(--color-google-blue)   360deg
+    );
+    /* Pop the Google colors hard against the white surface */
+    filter: saturate(2) brightness(1.3);
+    animation: energy-spin 20s linear infinite;
+  }
+
+  @keyframes energy-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /*
+   * Synchronized color aura (+20% intensity from last version).
+   * Tied to spinner position:
+   *   0%   Blue  (Top-Center start)
+   *   12.5% Red   (Top-Right corner) <- was previously 25%
+   *   37.5% Yellow (Bottom-Right)    <- was previously 50%
+   *   62.5% Green (Bottom-Left)      <- was previously 75%
+   *   87.5% Blue  (Top-Left)         <- was previously 95%
+   */
+  @keyframes neon-glow-shift {
+    0%, 100% {
+      filter:
+        drop-shadow(0 0 14px rgba(66,  133, 244, 1.0))
+        drop-shadow(0 0 38px rgba(66,  133, 244, 0.6))
+        drop-shadow(0 0 72px rgba(66,  133, 244, 0.25));
+    }
+    12.5% {
+      filter:
+        drop-shadow(0 0 14px rgba(234,  67,  53, 1.0))
+        drop-shadow(0 0 38px rgba(234,  67,  53, 0.6))
+        drop-shadow(0 0 72px rgba(234,  67,  53, 0.25));
+    }
+    37.5% {
+      filter:
+        drop-shadow(0 0 14px rgba(251, 188,   4, 1.0))
+        drop-shadow(0 0 38px rgba(251, 188,   4, 0.7))
+        drop-shadow(0 0 72px rgba(251, 188,   4, 0.30));
+    }
+    62.5% {
+      filter:
+        drop-shadow(0 0 14px rgba( 52, 168,  83, 1.0))
+        drop-shadow(0 0 38px rgba( 52, 168,  83, 0.6))
+        drop-shadow(0 0 72px rgba( 52, 168,  83, 0.25));
+    }
+    87.5% {
+      filter:
+        drop-shadow(0 0 14px rgba(66,  133, 244, 1.0))
+        drop-shadow(0 0 38px rgba(66,  133, 244, 0.6))
+        drop-shadow(0 0 72px rgba(66,  133, 244, 0.25));
+    }
+  }
+
+  /* Corner focus bulbs: 28vw @ 200px blur, half-sunk into each corner */
+  .focus-bulb {
+    position: absolute;
+    width: 28vw;
+    height: 28vw;
+    border-radius: 50%;
+    filter: blur(200px);
+    opacity: 0;
+    z-index: -1;
+  }
+
+  .bulb-tl { top: -14vw;    left: -14vw;   animation: bulb-sync-tl 20s ease-in-out infinite; }
+  .bulb-tr { top: -14vw;    right: -14vw;  animation: bulb-sync-tr 20s ease-in-out infinite; }
+  .bulb-br { bottom: -14vw; right: -14vw;  animation: bulb-sync-br 20s ease-in-out infinite; }
+  .bulb-bl { bottom: -14vw; left: -14vw;   animation: bulb-sync-bl 20s ease-in-out infinite; }
+
+  /*
+   * FINAL SYNC TIMING — exactly matching user spec (20s loop):
+   *   T= 0s  (0%)    = Top-Center  = Blue
+   *   T= 2.5s (12.5%) = Top-Right  = Red     ← bulb-tr PEAK
+   *   T= 7.5s (37.5%) = Bot-Right  = Yellow  ← bulb-br PEAK
+   *   T=12.5s (62.5%) = Bot-Left   = Green   ← bulb-bl PEAK
+   *   T=17.5s (87.5%) = Top-Left   = Blue    ← bulb-tl PEAK
+   * Peak window: ±2.5% rise/fall = ~0.5s fade each side
+   */
+
+  @keyframes bulb-sync-tr {
+    0%, 8%     { opacity: 0;    background-color: var(--color-google-red); }
+    10%        { opacity: 0.25; }
+    12.5%      { opacity: 0.80; background-color: var(--color-google-red); }
+    15%        { opacity: 0.25; }
+    17%, 100%  { opacity: 0;    background-color: var(--color-google-red); }
+  }
+
+  @keyframes bulb-sync-br {
+    0%, 33%    { opacity: 0;    background-color: var(--color-google-yellow); }
+    35%        { opacity: 0.25; }
+    37.5%      { opacity: 0.80; background-color: var(--color-google-yellow); }
+    40%        { opacity: 0.25; }
+    42%, 100%  { opacity: 0;    background-color: var(--color-google-yellow); }
+  }
+
+  @keyframes bulb-sync-bl {
+    0%, 58%    { opacity: 0;    background-color: var(--color-google-green); }
+    60%        { opacity: 0.25; }
+    62.5%      { opacity: 0.80; background-color: var(--color-google-green); }
+    65%        { opacity: 0.25; }
+    67%, 100%  { opacity: 0;    background-color: var(--color-google-green); }
+  }
+
+  @keyframes bulb-sync-tl {
+    /* Resting */
+    0%, 88%         { opacity: 0;   background-color: var(--color-google-blue); }
+    /* Rise */
+    91%             { opacity: 0.2; }
+    /* Peak: TL at 95% */
+    95%             { opacity: 0.70; background-color: var(--color-google-blue); }
+    /* Fall into reset */
+    100%            { opacity: 0;   background-color: var(--color-google-blue); }
   }
 </style>

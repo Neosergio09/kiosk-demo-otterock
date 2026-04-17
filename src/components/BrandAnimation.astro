@@ -1,0 +1,37 @@
+<style is:global>
+  /* ... tus variables :root se mantienen igual ... */
+
+  .glitter-container {
+    /* EXPLICACIÓN PARA ESTUDIO:
+       Usamos 4 degradados lineales (uno por cada borde).
+       Cada uno dice: "Sé negro (visible) en el extremo y vuelve transparente (escondido) hacia el centro".
+       Esto crea un marco perfecto donde la luz 'sangra' hacia adentro.
+    */
+    -webkit-mask-image:
+      linear-gradient(to bottom, black 0%, transparent 15%),
+      /* Borde superior */ linear-gradient(to top, black 0%, transparent 15%),
+      /* Borde inferior */ linear-gradient(to right, black 0%, transparent 10%),
+      /* Borde izquierdo */ linear-gradient(to left, black 0%, transparent 10%); /* Borde derecho */
+
+    /* Esto mezcla las 4 máscaras para que solo se vea el perímetro */
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
+
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -10;
+  }
+
+  .glitter-spark {
+    /* ... resto del código del spark igual ... */
+
+    /* AJUSTE PRO: 
+       Para que el Glitter se vea más 'Samsung', le bajamos un poco 
+       el desenfoque (blur) ahora que la máscara hace el trabajo sucio.
+    */
+    filter: blur(2px) brightness(1.8);
+  }
+
+  /* ... resto de tus animaciones y bulbos igual ... */
+</style>

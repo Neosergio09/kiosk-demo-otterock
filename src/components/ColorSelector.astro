@@ -14,7 +14,7 @@ const colors: ColorOption[] = [
 ---
 
 <div class="flex flex-col gap-4 lg:gap-6">
-  <p class="text-zinc-400 text-lg lg:text-2xl font-medium px-1">Elige el color</p>
+  <p class="text-lg lg:text-2xl font-medium px-1" style="color:#5F6368;">Elige el color</p>
 
   <!--
     Mobile : 5 swatches in a scrollable row, slightly smaller
@@ -64,7 +64,7 @@ const colors: ColorOption[] = [
         </div>
 
         <!-- Label — hidden on very small screens, shown sm+ -->
-        <span class="color-swatch-label-text hidden sm:block lg:block text-sm lg:text-lg font-semibold text-zinc-500 group-hover:text-zinc-200 transition-colors duration-200 text-center whitespace-nowrap">
+        <span class="color-swatch-label-text hidden sm:block lg:block text-sm lg:text-lg font-semibold transition-colors duration-200 text-center whitespace-nowrap" style="color:#5F6368;">
           {c.label}
         </span>
       </label>
@@ -86,9 +86,10 @@ const colors: ColorOption[] = [
     background: transparent;
   }
 
+  /* Selected — Google Blue ring */
   label[data-selected="true"] .color-swatch-ring {
-    background: linear-gradient(135deg, oklch(0.65 0.22 270), oklch(0.7 0.2 310));
-    box-shadow: 0 0 20px oklch(0.65 0.22 270 / 0.55);
+    background: #4285F4;
+    box-shadow: 0 0 0 4px rgba(66,133,244,0.20);
   }
 
   label[data-selected="true"] .color-check {
@@ -96,8 +97,15 @@ const colors: ColorOption[] = [
     transform: scale(1) !important;
   }
 
+  /* Label brightens on selection */
   label[data-selected="true"] .color-swatch-label-text {
-    color: white;
+    color: #4285F4;
+    font-weight: 700;
+  }
+
+  /* Hover: lighten label toward primary text */
+  .color-swatch-label:hover .color-swatch-label-text {
+    color: #202124 !important;
   }
 </style>
 

@@ -20,7 +20,7 @@ const garments: GarmentOption[] = [
 ---
 
 <div class="flex flex-col gap-4 lg:gap-6">
-  <p class="text-zinc-400 text-lg lg:text-2xl font-medium px-1">Selecciona tu prenda</p>
+  <p class="text-lg lg:text-2xl font-medium px-1" style="color:#5F6368;">Selecciona tu prenda</p>
 
   <!--
     Mobile : 3-column icon grid
@@ -35,7 +35,7 @@ const garments: GarmentOption[] = [
     {garments.map((g, i) => (
       <label
         for={`garment-${g.id}`}
-        class="garment-card glass glass-hover rounded-2xl lg:rounded-3xl cursor-pointer select-none animate-fadeInUp"
+        class="garment-card glass glass-hover rounded-2xl lg:rounded-3xl cursor-pointer select-none animate-fadeInUp border border-[#DADCE0]"
         style={`animation-delay: ${i * 0.1}s`}
         data-value={g.id}
       >
@@ -50,21 +50,21 @@ const garments: GarmentOption[] = [
 
         <!-- Mobile layout: icon + label stacked -->
         <div class="mobile-card flex flex-col items-center gap-2 p-4 text-center">
-          <div class="garment-icon w-14 h-14 text-zinc-400 transition-colors duration-300" set:html={g.icon} />
-          <span class="garment-label text-sm font-bold text-white leading-tight">{g.label}</span>
-          <span class="text-xs text-zinc-500 leading-tight">{g.description}</span>
+          <div class="garment-icon w-14 h-14 transition-colors duration-300" style="color:#80868B;" set:html={g.icon} />
+          <span class="garment-label text-sm font-bold leading-tight" style="color:#202124;">{g.label}</span>
+          <span class="text-xs leading-tight" style="color:#80868B;">{g.description}</span>
           <!-- Mobile check dot -->
-          <div class="garment-check-dot w-4 h-4 rounded-full border-2 border-zinc-600 mt-1 transition-all duration-300"></div>
+          <div class="garment-check-dot w-4 h-4 rounded-full border-2 mt-1 transition-all duration-300" style="border-color:#DADCE0;"></div>
         </div>
 
         <!-- Totem/Desktop layout: horizontal row -->
         <div class="desktop-card hidden items-center gap-8 px-8 py-0">
           <div class="garment-icon w-20 h-20 lg:w-24 lg:h-24 shrink-0 text-zinc-400 transition-colors duration-300" set:html={g.icon} />
           <div class="flex flex-col gap-1 flex-1">
-            <span class="garment-label text-2xl lg:text-3xl font-bold text-white tracking-tight leading-none">{g.label}</span>
-            <span class="text-base lg:text-xl text-zinc-500">{g.description}</span>
+            <span class="garment-label text-2xl lg:text-3xl font-bold tracking-tight leading-none" style="color:#202124;">{g.label}</span>
+            <span class="text-base lg:text-xl" style="color:#80868B;">{g.description}</span>
           </div>
-          <div class="garment-check w-9 h-9 lg:w-10 lg:h-10 rounded-full border-2 border-zinc-700 flex items-center justify-center transition-all duration-300 shrink-0">
+          <div class="garment-check w-9 h-9 lg:w-10 lg:h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 shrink-0" style="border-color:#DADCE0;">
             <svg class="w-4 h-4 lg:w-5 lg:h-5 opacity-0 transition-opacity duration-200" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
             </svg>
@@ -92,8 +92,8 @@ const garments: GarmentOption[] = [
 
   /* ── Card base ── */
   .garment-card {
-    border: 1px solid oklch(1 0 0 / 0.07);
-    transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease, transform 200ms ease;
+    /* border is set via class above; override any glass border to border-[#DADCE0] */
+    transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 180ms ease;
     min-height: 100px;
   }
 
@@ -103,37 +103,37 @@ const garments: GarmentOption[] = [
     }
     .garment-card:hover {
       transform: scale(1.015);
-      border-color: oklch(1 0 0 / 0.13);
+      border-color: #C5C8CC;
     }
     /* Hide mobile layout, show desktop row */
     .garment-card .mobile-card  { display: none; }
     .garment-card .desktop-card { display: flex; }
   }
 
-  /* ── Selected state ── */
+  /* ── Selected state — Google Blue tint ── */
   .garment-card[data-selected="true"] {
-    background: oklch(0.65 0.22 270 / 0.12);
-    border-color: oklch(0.65 0.22 270 / 0.5);
-    box-shadow: 0 0 30px oklch(0.65 0.22 270 / 0.2);
+    background: #E8F0FE;
+    border-color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66,133,244,0.15);
   }
 
   .garment-card[data-selected="true"] .garment-icon {
-    color: oklch(0.75 0.2 270);
+    color: #4285F4;
   }
 
-  /* Desktop checkmark ring */
+  /* Desktop checkmark ring — Google Blue */
   .garment-card[data-selected="true"] .garment-check {
-    background: linear-gradient(135deg, oklch(0.65 0.22 270), oklch(0.7 0.2 310));
+    background: #4285F4;
     border-color: transparent;
-    box-shadow: 0 0 16px oklch(0.65 0.22 270 / 0.5);
+    box-shadow: 0 0 0 3px rgba(66,133,244,0.25);
   }
-  .garment-card[data-selected="true"] .garment-check svg { opacity: 1; }
+  .garment-card[data-selected="true"] .garment-check svg { opacity: 1; color: white; }
 
-  /* Mobile check dot */
+  /* Mobile check dot — Google Blue */
   .garment-card[data-selected="true"] .garment-check-dot {
-    background: linear-gradient(135deg, oklch(0.65 0.22 270), oklch(0.7 0.2 310));
+    background: #4285F4;
     border-color: transparent;
-    box-shadow: 0 0 8px oklch(0.65 0.22 270 / 0.6);
+    box-shadow: 0 0 0 3px rgba(66,133,244,0.20);
   }
 </style>
 
