@@ -2,10 +2,10 @@
 import ShirtViewer3D from './ShirtViewer3D.astro';
 
 const patches = [
-  { id: 'cloud', icon: '☁️', label: 'Cloud' },
+  { id: 'cloud',   icon: '☁️', label: 'Cloud'   },
   { id: 'diamond', icon: '💎', label: 'Diamond' },
-  { id: 'sun', icon: '☀️', label: 'Sun' },
-  { id: 'star', icon: '⭐', label: 'Star' },
+  { id: 'sun',     icon: '☀️', label: 'Sun'     },
+  { id: 'star',    icon: '⭐', label: 'Star'    },
 ];
 ---
 
@@ -16,21 +16,30 @@ const patches = [
   <!-- 3D GARMENT VIEWER -->
   <ShirtViewer3D />
 
-  <!-- DRAG & DROP INVENTORY -->
+  <!-- PATCH INVENTORY -->
   <div class="flex flex-col gap-3">
     <div class="flex justify-between items-center px-1">
-      <p class="text-zinc-400 text-lg lg:text-xl font-medium">Parches (Max 4)</p>
-      <span id="patch-count" class="text-xs font-bold text-violet-400 glass px-2 py-1 rounded-md">0 / 4</span>
+      <p class="text-sm lg:text-base font-semibold" style="color:#202124;">Parches <span style="color:#80868B;font-weight:400;">(Max 4)</span></p>
+      <span id="patch-count"
+        class="text-xs font-bold px-2 py-1 rounded-full"
+        style="background:rgba(66,133,244,0.10); color:#4285F4; border:1px solid rgba(66,133,244,0.25);"
+      >0 / 4</span>
     </div>
 
+    <!--
+      patch-item: touch-action:none is set inline so the browser
+      does NOT intercept pointer events for scroll/zoom while dragging.
+    -->
     <div class="grid grid-cols-4 gap-2">
       {patches.map(p => (
         <div
-          draggable="true"
-          class="patch-item glass glass-hover cursor-grab rounded-xl flex items-center justify-center text-3xl pb-1"
-          style="aspect-ratio: 1;"
+          class="patch-item"
+          style="touch-action: none; aspect-ratio: 1;"
           data-type={p.label}
           data-icon={p.icon}
+          role="button"
+          tabindex="0"
+          aria-label={`Parche: ${p.label}`}
         >
           {p.icon}
         </div>
@@ -38,75 +47,158 @@ const patches = [
     </div>
 
     <!-- TEXT TOOL -->
-    <div class="mt-2 glass p-4 rounded-2xl flex flex-col gap-3">
-      <label for="custom-text-input" class="text-zinc-400 text-sm font-medium">Texto Personalizado (1 permitido, < 10cm)</label>
+    <div class="mt-2 p-4 rounded-2xl flex flex-col gap-3"
+         style="background:#F8F9FA; border:1px solid #DADCE0;">
+      <label for="custom-text-input"
+             class="text-xs lg:text-sm font-medium uppercase tracking-widest"
+             style="color:#80868B;">
+        Texto Personalizado <span style="font-weight:400;">(1 • máx 15 caracteres)</span>
+      </label>
       <input
         type="text"
         id="custom-text-input"
         placeholder="Ej: GOOGLE"
         maxlength="15"
-        class="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-violet-500 transition-colors"
+        class="custom-text-input"
       />
     </div>
   </div>
 </div>
 
 <style>
-  .patch-item { border: 1px solid oklch(1 0 0 / 0.1); }
-  .patch-item:active { cursor: grabbing; }
-  
-  /* Rendered patch on canvas */
+  /* ── Patch inventory items ── */
+  .patch-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    padding-bottom: 2px;
+    border-radius: 0.75rem;
+    border: 1px solid #DADCE0;
+    background: #FFFFFF;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+    will-change: transform;
+  }
+
+  .patch-item:hover {
+    border-color: rgba(66,133,244,0.5);
+    box-shadow: 0 2px 8px rgba(66,133,244,0.15);
+  }
+
+  /* Lift state applied via JS during drag */
+  .patch-item.is-dragging {
+    cursor: grabbing;
+    opacity: 0.4;
+  }
+
+  /* ── Floating ghost clone dragged by pointer ── */
+  :global(.patch-ghost) {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    transform: translate(-50%, -50%) scale(1.15);
+    filter: drop-shadow(0 8px 16px rgba(66,133,244,0.40))
+            drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    transition: transform 80ms ease;
+    will-change: left, top, transform;
+  }
+
+  /* ── Placed patches inside the canvas overlay ── */
   :global(.canvas-patch) {
     position: absolute;
-    transform: translate(-50%, -50%); /* Center on cursor */
-    font-size: 2rem;
-    pointer-events: none; /* Let clicks pass through if needed, but wait! We might want to delete them. */
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.25rem, 3.5vw, 2rem);
+    pointer-events: none;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+    transition: transform 200ms cubic-bezier(0.34,1.56,0.64,1);
+    animation: patch-land 220ms cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes patch-land {
+    from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    to   { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
+  }
+
+  /* ── Canvas drop zone highlight ── */
+  :global(#design-3d-overlay.drag-over) {
+    border-color: rgba(66,133,244,0.7) !important;
+    background: rgba(66,133,244,0.04);
+  }
+
+  /* ── Custom text input ── */
+  .custom-text-input {
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid #DADCE0;
+    border-radius: 0.75rem;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    color: #202124;
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .custom-text-input::placeholder { color: #BDC1C6; }
+  .custom-text-input:focus {
+    border-color: #4285F4;
+    box-shadow: 0 0 0 3px rgba(66,133,244,0.18);
   }
 </style>
 
 <script>
-  // ── STATE ──
-  let patchesState: any[] = [];
+  // ─────────────────────────────────────────────────────────
+  //  PATCH EDITOR — Pointer Events Drag & Drop Engine
+  //  Works on: mouse, touch, stylus, touch monitors
+  // ─────────────────────────────────────────────────────────
+
+  // ── STATE ─────────────────────────────────────────────────
+  type PatchEntry = {
+    id: string;
+    type: string;
+    icon: string;
+    x: number;
+    y: number;
+    side: string;
+  };
+
+  let patchesState: PatchEntry[] = [];
   let currentSide = 'front';
-  let customText = '';
 
-  // ── DOM REFS ──
-  const inventoryItems = document.querySelectorAll('.patch-item');
-  const textInput = document.getElementById('custom-text-input') as HTMLInputElement;
+  // ── DOM REFS ───────────────────────────────────────────────
+  const textInput   = document.getElementById('custom-text-input')  as HTMLInputElement;
   const hiddenInput = document.getElementById('customization-data') as HTMLInputElement;
-  const patchCount = document.getElementById('patch-count')!;
-  
-  // The dropzone is inside ShirtViewer3D
-  const canvas = document.getElementById('design-3d-overlay')!;
+  const patchCount  = document.getElementById('patch-count')!;
+  const canvas      = document.getElementById('design-3d-overlay') as HTMLElement;
+  const inventoryItems = Array.from(document.querySelectorAll<HTMLElement>('.patch-item'));
 
-  // ── STATE SYNC ──
+  // ── STATE SYNC ─────────────────────────────────────────────
   function updateState() {
-    customText = textInput.value;
     hiddenInput.value = JSON.stringify({
       patches: patchesState,
-      text: customText
+      text: textInput.value,
     });
     patchCount.textContent = `${patchesState.length} / 4`;
     renderCanvas();
   }
 
-  // ── RENDER CANVAS BASE ON SIDE ──
   function renderCanvas() {
     canvas.innerHTML = '';
-    const visiblePatches = patchesState.filter(p => p.side === currentSide);
-    
-    visiblePatches.forEach(p => {
-      const el = document.createElement('div');
-      el.className = 'canvas-patch';
-      el.textContent = p.icon;
-      el.style.left = `${p.x}%`;
-      el.style.top = `${p.y}%`;
-      canvas.appendChild(el);
-    });
+    patchesState
+      .filter(p => p.side === currentSide)
+      .forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'canvas-patch';
+        el.textContent = p.icon;
+        el.style.left = `${p.x}%`;
+        el.style.top  = `${p.y}%`;
+        canvas.appendChild(el);
+      });
   }
 
-  // Listen for side changes from ShirtViewer3D
+  // Side change from ShirtViewer3D
   window.addEventListener('sideChanged', (e: any) => {
     currentSide = e.detail.side;
     renderCanvas();
@@ -114,61 +206,174 @@ const patches = [
 
   textInput.addEventListener('input', () => updateState());
 
-  // ── DRAG & DROP LOGIC ──
-  inventoryItems.forEach(item => {
-    item.addEventListener('dragstart', (e: any) => {
-      if (patchesState.length >= 4) {
-        e.preventDefault();
-        alert('Límite de 4 parches alcanzado.');
-        return;
-      }
-      e.dataTransfer.setData('text/plain', JSON.stringify({
-        type: item.getAttribute('data-type'),
-        icon: item.getAttribute('data-icon')
-      }));
-      canvas.style.borderColor = 'oklch(0.65 0.22 270 / 0.8)';
-    });
-    
-    item.addEventListener('dragend', () => {
-      canvas.style.borderColor = 'transparent';
-    });
-  });
+  // ─────────────────────────────────────────────────────────
+  //  POINTER EVENTS DRAG ENGINE
+  // ─────────────────────────────────────────────────────────
 
-  canvas.addEventListener('dragover', (e) => {
-    e.preventDefault(); // Necessary to allow dropping
-    e.dataTransfer!.dropEffect = 'copy';
-  });
+  /**
+   * We build a "ghost" clone that follows the pointer.
+   * The actual inventory item stays in place but dims.
+   * On pointerup over the canvas we commit the patch.
+   *
+   * Key design decisions:
+   *  - setPointerCapture() → prevents "stuck" bug if pointer
+   *    leaves the element during fast movement.
+   *  - requestAnimationFrame throttle → 60fps, no jank.
+   *  - touch-action:none on items → browser won't scroll.
+   */
 
-  canvas.addEventListener('drop', (e) => {
-    e.preventDefault();
-    canvas.style.borderColor = 'transparent';
-    
-    if (patchesState.length >= 4) return;
+  interface DragSession {
+    item: HTMLElement;
+    ghost: HTMLElement;
+    type: string;
+    icon: string;
+    // Last known pointer position (updated every pointermove)
+    px: number;
+    py: number;
+    // rAF handle
+    rafId: number | null;
+    // Whether a rAF is scheduled
+    rafPending: boolean;
+  }
 
-    try {
-      const data = JSON.parse(e.dataTransfer!.getData('text/plain'));
-      
-      // Calculate coordinates relative to canvas (0-100%)
-      const rect = canvas.getBoundingClientRect();
-      let x = ((e.clientX - rect.left) / rect.width) * 100;
-      let y = ((e.clientY - rect.top) / rect.height) * 100;
-      
-      // Clamp bounds
-      x = Math.max(0, Math.min(100, x));
-      y = Math.max(0, Math.min(100, y));
+  let session: DragSession | null = null;
+
+  function createGhost(icon: string): HTMLElement {
+    const g = document.createElement('div');
+    g.className = 'patch-ghost';
+    g.textContent = icon;
+    document.body.appendChild(g);
+    return g;
+  }
+
+  function positionGhost(ghost: HTMLElement, x: number, y: number) {
+    ghost.style.left = `${x}px`;
+    ghost.style.top  = `${y}px`;
+  }
+
+  function cleanupSession() {
+    if (!session) return;
+    session.ghost.remove();
+    session.item.classList.remove('is-dragging');
+    canvas.classList.remove('drag-over');
+    if (session.rafId !== null) cancelAnimationFrame(session.rafId);
+    session = null;
+  }
+
+  function onPointerMove(e: PointerEvent) {
+    if (!session) return;
+    // Update latest coords
+    session.px = e.clientX;
+    session.py = e.clientY;
+
+    // Highlight canvas if pointer is over it
+    const underEl = document.elementFromPoint(e.clientX, e.clientY);
+    if (underEl && canvas.contains(underEl)) {
+      canvas.classList.add('drag-over');
+    } else {
+      canvas.classList.remove('drag-over');
+    }
+
+    // Throttle position updates to rAF
+    if (!session.rafPending) {
+      session.rafPending = true;
+      session.rafId = requestAnimationFrame(() => {
+        if (session) {
+          positionGhost(session.ghost, session.px, session.py);
+          session.rafPending = false;
+        }
+      });
+    }
+  }
+
+  function onPointerUp(e: PointerEvent) {
+    if (!session) return;
+
+    // Check if pointer is released over the canvas drop zone
+    const rect = canvas.getBoundingClientRect();
+    const overCanvas =
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top  &&
+      e.clientY <= rect.bottom;
+
+    if (overCanvas && patchesState.length < 4) {
+      // Convert absolute coords to canvas-relative percentage
+      let x = ((e.clientX - rect.left)  / rect.width)  * 100;
+      let y = ((e.clientY - rect.top)   / rect.height) * 100;
+      x = Math.max(2, Math.min(98, x));
+      y = Math.max(2, Math.min(98, y));
 
       patchesState.push({
-        id: Date.now().toString(),
-        type: data.type,
-        icon: data.icon,
-        x: Math.round(x * 10) / 10, // 1 decimal
-        y: Math.round(y * 10) / 10,
-        side: currentSide
+        id:   Date.now().toString(),
+        type: session.type,
+        icon: session.icon,
+        x:    Math.round(x * 10) / 10,
+        y:    Math.round(y * 10) / 10,
+        side: currentSide,
       });
-      
       updateState();
-    } catch (err) {
-      console.error('Invalid drop', err);
+    } else if (patchesState.length >= 4 && overCanvas) {
+      // Subtle shake hint: patch limit reached
+      canvas.animate(
+        [{ transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }],
+        { duration: 250, iterations: 2, easing: 'ease-in-out' }
+      );
     }
+
+    cleanupSession();
+
+    // Remove global listeners
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup',   onPointerUp);
+    document.removeEventListener('pointercancel', onPointerCancel);
+  }
+
+  function onPointerCancel() {
+    cleanupSession();
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup',   onPointerUp);
+    document.removeEventListener('pointercancel', onPointerCancel);
+  }
+
+  // ── Attach pointerdown to every inventory item ────────────
+  inventoryItems.forEach(item => {
+    item.addEventListener('pointerdown', (e: PointerEvent) => {
+      // Ignore right-clicks / multi-touch secondary contacts
+      if (e.button !== 0 && e.pointerType === 'mouse') return;
+      if (patchesState.length >= 4) {
+        // Gentle shake feedback instead of alert
+        item.animate(
+          [{ transform: 'scale(1)' }, { transform: 'scale(0.88)' }, { transform: 'scale(1)' }],
+          { duration: 300, easing: 'ease-in-out' }
+        );
+        return;
+      }
+
+      e.preventDefault(); // stop text selection / scroll
+
+      const icon = item.getAttribute('data-icon') ?? '?';
+      const type = item.getAttribute('data-type') ?? '';
+
+      // Capture pointer on the item so pointermove fires even
+      // if pointer leaves the element — prevents "stuck" bug
+      item.setPointerCapture(e.pointerId);
+
+      const ghost = createGhost(icon);
+      positionGhost(ghost, e.clientX, e.clientY);
+      item.classList.add('is-dragging');
+
+      session = {
+        item, ghost, type, icon,
+        px: e.clientX, py: e.clientY,
+        rafId: null, rafPending: false,
+      };
+
+      // Global listeners — capture phase ensures we get the event
+      // even if pointer has left the item
+      document.addEventListener('pointermove',   onPointerMove,   { passive: true });
+      document.addEventListener('pointerup',     onPointerUp);
+      document.addEventListener('pointercancel', onPointerCancel);
+    });
   });
 </script>
