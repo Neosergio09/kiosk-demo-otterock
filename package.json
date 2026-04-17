@@ -20,5 +20,8 @@
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.7",
     "tailwindcss": "^4.0.0"
+  },
+  "devDependencies": {
+    "supabase": "^2.92.1"
   }
 }
