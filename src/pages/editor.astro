@@ -1,0 +1,306 @@
+---
+import Layout          from '../layouts/Layout.astro';
+import GarmentSelector from '../components/GarmentSelector.astro';
+import ColorSelector   from '../components/ColorSelector.astro';
+import SizeSelector    from '../components/SizeSelector.astro';
+import PatchEditor     from '../components/PatchEditor.astro';
+import { actions }     from 'astro:actions';
+
+// ── POST handler ──────────────────────────────────────────────────────────────
+const result = await Astro.getActionResult(actions.createPersonalizedOrder);
+
+const success     = result?.data?.success ?? false;
+const actionError = result?.error;
+---
+
+<Layout title="Personaliza tu Prenda — Google Cloud Day" step={success ? 3 : 1}>
+
+  {/* ═══════════════════════════════════════════════════════════════════
+       SUCCESS SCREEN — Google Green (#34A853) palette
+  ═══════════════════════════════════════════════════════════════════ */}
+  {success && result?.data && (
+    <div
+      id="success-screen"
+      class="
+        relative flex-1
+        flex flex-col items-center justify-start
+        px-5 sm:px-10 lg:px-16
+        pt-10 pb-16
+        animate-fadeInUp
+      "
+    >
+      <!-- Success badge — Google Green -->
+      <div class="relative flex items-center justify-center mt-6 mb-8 animate-fadeInUp" style="animation-delay:0s">
+        <!-- Outer glow ring -->
+        <div
+          class="absolute rounded-full"
+          style="inset:-16%; background: rgba(52,168,83,0.10); border-radius: 50%;"
+        ></div>
+        <div
+          class="w-36 h-36 lg:w-56 lg:h-56 rounded-full flex items-center justify-center"
+          style="background:#34A853; box-shadow: 0 4px 24px rgba(52,168,83,0.40), 0 0 0 6px rgba(52,168,83,0.15);"
+        >
+          <svg class="w-16 h-16 lg:w-28 lg:h-28 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Headline -->
+      <div class="text-center mb-8 animate-fadeInUp" style="animation-delay:.1s">
+        <h1 class="text-5xl lg:text-8xl font-black leading-none mb-3" style="color:#34A853;">¡Pedido Listo!</h1>
+        <p class="text-xl lg:text-3xl font-medium" style="color:#5F6368;">Tu diseño ha sido enviado exitosamente.</p>
+      </div>
+
+      <!-- Visual order summary — Material white cards -->
+      <div
+        class="w-full rounded-3xl lg:rounded-4xl p-6 lg:p-10 mb-8 animate-fadeInUp border border-[#DADCE0]"
+        style="max-width:700px; animation-delay:.2s; background:#FFFFFF; box-shadow: 0 1px 3px rgba(60,64,67,0.12), 0 4px 16px rgba(60,64,67,0.08);"
+      >
+        <p class="text-xs lg:text-sm font-semibold uppercase tracking-widest mb-5" style="color:#80868B;">Resumen del Pedido</p>
+
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Color card -->
+          <div class="rounded-2xl p-4 lg:p-6 flex flex-col gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
+            <span class="text-2xl lg:text-4xl">🎨</span>
+            <span class="text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Color</span>
+            <span class="text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.colorLabel}</span>
+          </div>
+          <!-- Size card -->
+          <div class="rounded-2xl p-4 lg:p-6 flex flex-col gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
+            <span class="text-2xl lg:text-4xl">📏</span>
+            <span class="text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Talla</span>
+            <span class="text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.size}</span>
+          </div>
+          <!-- Patches card -->
+          <div class="rounded-2xl p-4 lg:p-6 flex flex-col gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
+            <span class="text-2xl lg:text-4xl">✨</span>
+            <span class="text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Parches</span>
+            <span class="text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.patchesCount}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thank-you note -->
+      <p
+        class="text-base lg:text-xl text-center animate-fadeInUp"
+        style="max-width:600px; animation-delay:.3s; color:#5F6368;"
+      >
+        ¡Tu personalización ha sido enviada con éxito! ✨
+      </p>
+
+      <!-- Primary CTA: New order — Google Blue -->
+      <button
+        id="reset-btn"
+        type="button"
+        class="animate-fadeInUp mt-8"
+        style="max-width:700px; width:100%; animation-delay:.45s"
+      >
+        <span class="new-order-btn">
+          <svg class="w-6 h-6 lg:w-7 lg:h-7 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          CREAR OTRO PEDIDO 👕
+        </span>
+      </button>
+    </div>
+  )}
+
+  {/* ═══════════════════════════════════════════════════════════════════
+       ERROR BANNER — Material style: white card, red left border
+  ═══════════════════════════════════════════════════════════════════ */}
+  {actionError && (
+    <div
+      id="error-banner"
+      class="mx-5 lg:mx-12 mt-4 rounded-2xl lg:rounded-3xl px-5 py-4 lg:px-8 lg:py-5 flex items-center gap-4 animate-fadeInUp shrink-0 border border-[#DADCE0]"
+      style="background:#FFFFFF; border-left: 4px solid #EA4335; box-shadow: 0 1px 6px rgba(60,64,67,0.12);"
+    >
+      <div
+        class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+        style="background: rgba(234,67,53,0.10);"
+      >
+        <svg class="w-6 h-6" style="color:#EA4335;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+      </div>
+      <p class="text-lg lg:text-2xl font-medium" style="color:#202124;">{actionError.message}</p>
+    </div>
+  )}
+
+  {/* ═══════════════════════════════════════════════════════════════════
+       MAIN FORM
+  ═══════════════════════════════════════════════════════════════════ */}
+  {!success && (
+    <form
+      id="personalization-form"
+      method="POST"
+      enctype="multipart/form-data"
+      action={actions.createPersonalizedOrder}
+      class="relative"
+    >
+
+      <!-- ── "Enviando Pedido…" fullscreen overlay — white Material ── -->
+      <div
+        id="processing-overlay"
+        class="absolute inset-0 z-40 hidden flex-col items-center justify-center gap-8 lg:gap-10 px-10 rounded-2xl lg:rounded-3xl"
+        style="background: rgba(255,255,255,0.94); backdrop-filter: blur(8px);"
+      >
+        <!-- Spinner — Google Blue -->
+        <div class="relative w-40 h-40 lg:w-52 lg:h-52">
+          <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="88" fill="none" stroke="#DADCE0" stroke-width="8"/>
+          </svg>
+          <svg
+            class="absolute inset-0 w-full h-full -rotate-90"
+            viewBox="0 0 200 200"
+            style="animation: spin-slow 1s linear infinite;"
+          >
+            <defs>
+              <linearGradient id="sg" gradientTransform="rotate(90)">
+                <stop offset="0%"   stop-color="#4285F4"/>
+                <stop offset="100%" stop-color="#34A853"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="100" r="88" fill="none" stroke="url(#sg)" stroke-width="8" stroke-linecap="round" stroke-dasharray="200 353"/>
+          </svg>
+          <!-- Upload icon center -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg class="w-12 h-12 lg:w-16 lg:h-16" style="color:#4285F4;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <p class="text-4xl lg:text-5xl font-black mb-2" style="color:#202124;">Enviando Pedido…</p>
+          <p class="text-lg lg:text-2xl" style="color:#5F6368;">Subiendo tu diseño y generando el enlace</p>
+        </div>
+
+        <!-- Step pills — Material white cards -->
+        <div class="flex flex-col gap-3 w-full max-w-sm lg:max-w-lg xl:max-w-xl">
+          {[
+            ['🖼️', 'Subiendo imagen a la nube'],
+            ['💾', 'Guardando pedido en base de datos'],
+            ['📲', 'Preparando enlace de WhatsApp'],
+          ].map(([em, txt], i) => (
+            <div
+              class="flex items-center gap-4 rounded-xl lg:rounded-2xl px-5 py-4 lg:py-5 border border-[#DADCE0]"
+              style={`background:#FFFFFF; box-shadow: 0 1px 4px rgba(60,64,67,0.10); animation: fadeInUp 0.4s ease ${i * 0.15}s both;`}
+            >
+              <span class="text-2xl lg:text-3xl">{em}</span>
+              <span class="text-base lg:text-xl xl:text-2xl font-medium" style="color:#5F6368;">{txt}</span>
+              <!-- Google Blue pulse dot -->
+              <div
+                class="ml-auto w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                style="border: 2px solid #4285F4;"
+              >
+                <div class="w-2 h-2 rounded-full" style="background:#4285F4; animation: pulse 1.5s ease-in-out infinite;"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!--
+        ── Responsive layout ────────────────────────────────────────────
+        Mobile      : single column, stacked
+        ≥lg (PC)    : 2-col grid inside max-w-7xl centered container
+                      Left  → selectors + CTA (natural flow)
+                      Right → uploader sticky to top of column
+        ────────────────────────────────────────────────────────────── -->
+      <div class="px-5 sm:px-8 lg:px-10 pt-4 lg:pt-6 pb-6 max-w-7xl mx-auto w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 xl:gap-14 items-start">
+
+          <!-- ── LEFT column: Controls ── -->
+          <div class="flex flex-col gap-6 lg:gap-8 pb-4 lg:pb-8">
+            <GarmentSelector />
+            <ColorSelector />
+            <SizeSelector />
+
+            <!-- Submit CTA — Google Blue, Material Design -->
+            <div class="pt-1 lg:pt-2">
+              <button
+                id="submit-btn"
+                type="submit"
+                class="mt-4 w-full font-bold text-lg lg:text-xl py-4 lg:py-5 rounded-2xl lg:rounded-3xl cursor-pointer transition-all duration-200"
+                style="
+                  background: #4285F4;
+                  color: #FFFFFF;
+                  box-shadow: 0 1px 3px rgba(60,64,67,0.2), 0 4px 16px rgba(66,133,244,0.35);
+                "
+                onmouseover="this.style.background='#3367D6'; this.style.transform='translateY(-1px)';"
+                onmouseout="this.style.background='#4285F4'; this.style.transform='translateY(0)';"
+                onmousedown="this.style.transform='scale(0.98)';"
+                onmouseup="this.style.transform='translateY(-1px)';"
+              >
+                <span id="btn-label" class="flex items-center justify-center gap-4">
+                  CONFIRMAR PEDIDO
+                </span>
+                <span id="btn-loading" class="hidden items-center justify-center gap-4">
+                  <svg class="w-7 h-7 lg:w-8 lg:h-8 shrink-0" viewBox="0 0 24 24" fill="none"
+                       style="animation: spin-slow 0.9s linear infinite;">
+                    <circle cx="12" cy="12" r="10" stroke="white" stroke-width="3" stroke-opacity="0.3"/>
+                    <path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                  Enviando…
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ── RIGHT column: Preview — sticky on desktop ── -->
+          <div class="lg:sticky lg:top-4 h-max rounded-3xl border border-[#DADCE0]" style="background:#F8F9FA;">
+            <PatchEditor />
+          </div>
+
+        </div>
+      </div>
+
+    </form>
+  )}
+
+</Layout>
+
+<!-- ── Client scripts ──────────────────────────────────────────────────────── -->
+<script>
+  // ── Submit: show overlay + spinner ───────────────────────────────────────
+  const form              = document.getElementById('personalization-form') as HTMLFormElement | null;
+  const btnLabel          = document.getElementById('btn-label');
+  const btnLoading        = document.getElementById('btn-loading');
+  const submitBtn         = document.getElementById('submit-btn') as HTMLButtonElement | null;
+  const processingOverlay = document.getElementById('processing-overlay');
+
+  form?.addEventListener('submit', () => {
+    btnLabel?.classList.add('hidden');
+    btnLoading?.classList.remove('hidden');
+    btnLoading?.classList.add('flex');
+    if (submitBtn) submitBtn.disabled = true;
+    processingOverlay?.classList.remove('hidden');
+    processingOverlay?.classList.add('flex');
+  });
+
+  // ── No auto-redirect: user stays on success screen ───────────────────────
+
+  // ── Reset kiosk button ────────────────────────────────────────────────────
+  document.getElementById('reset-btn')?.addEventListener('click', () => {
+    const screen = document.getElementById('success-screen');
+    if (screen) {
+      screen.style.transition    = 'opacity 0.4s ease';
+      screen.style.opacity       = '0';
+      screen.style.pointerEvents = 'none';
+    }
+    setTimeout(() => window.location.href = '/', 420);
+  });
+
+  // ── Auto-dismiss error banner after 6 s ──────────────────────────────────
+  const errorBanner = document.getElementById('error-banner');
+  if (errorBanner) {
+    setTimeout(() => {
+      errorBanner.style.transition = 'opacity 0.5s ease';
+      errorBanner.style.opacity    = '0';
+      setTimeout(() => errorBanner.remove(), 520);
+    }, 6000);
+  }
+</script>

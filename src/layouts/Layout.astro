@@ -1,57 +1,73 @@
 ---
-import '../styles/global.css';
-import BrandAnimation from '../components/BrandAnimation.astro';
+import "../styles/global.css";
+import BrandAnimation from "../components/BrandAnimation.astro";
 
 interface Props {
   title?: string;
   step?: number;
 }
-const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
+const { title = "Personalización de Prendas", step = 1 } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content="Personaliza tu prenda para el Google Cloud Day 2026" />
+    <meta
+      name="description"
+      content="Personaliza tu prenda para el Google Cloud Day 2026"
+    />
     <!-- Light mode: white chrome on mobile browsers -->
     <meta name="theme-color" content="#FFFFFF" />
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Google Sans + Inter for body text -->
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Google Sans + Inter for body text + Roboto Mono for terminal effects -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <!-- model-viewer web component (3D garment visualization) -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+    <script
+      type="module"
+      src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
+    ></script>
   </head>
 
   <!--
     body: centers the Material kiosk card on wide screens over a white dot-grid background
   -->
   <body class="kiosk-body text-[#202124]">
-
     <!-- ── Full-viewport dot-grid background stage (Google Cloud style) ── -->
     <div class="page-stage" aria-hidden="true"></div>
 
     <!-- ── Ambient Google Corner Focus Bulbs & LED Perimeter ── -->
-    <div id="energy-perimeter" class="fixed inset-0 pointer-events-none -z-20 overflow-hidden">
-      
+    <div
+      id="energy-perimeter"
+      class="fixed inset-0 pointer-events-none -z-20 overflow-hidden"
+    >
       <!-- 15px LED Strip + inner soft-white fade overlay -->
       <div class="led-mask-shell absolute inset-0">
         <div class="led-spinner"></div>
       </div>
       <!-- Soft inset white vignette: blends the 15px LED into the white content area -->
-      <div class="led-inner-fade absolute" style="inset:0; pointer-events:none; box-shadow: inset 0 0 28px 14px #ffffff; z-index:1;"></div>
-      
+      <div
+        class="led-inner-fade absolute"
+        style="inset:0; pointer-events:none; box-shadow: inset 0 0 28px 14px #ffffff; z-index:1;"
+      >
+      </div>
+
       <!-- 4 Sync'd Corner Focus Bulbs -->
       <div class="focus-bulb bulb-tl"></div>
       <div class="focus-bulb bulb-tr"></div>
       <div class="focus-bulb bulb-bl"></div>
       <div class="focus-bulb bulb-br"></div>
-
     </div>
 
     <!--
@@ -60,41 +76,61 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
       ≥1024px  : Material Design card, max-width 1180px, elevated
     -->
     <div class="kiosk-card">
-
       <!-- ── Header ── -->
-      <header class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 px-5 sm:px-8 lg:px-10 pt-6 pb-4 lg:pt-8 lg:pb-6 shrink-0">
-          <!-- Brand Animation and Name -->
-          <div class="flex items-center gap-3 lg:gap-4 min-w-0">
-            <BrandAnimation />
-            <div class="flex flex-col justify-center min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="gemini-tag text-[9px] lg:text-xs font-bold tracking-widest uppercase truncate" style="color:#fbbc04;">Powered by Gemini 3.1</span>
-              </div>
-              <span class="text-[10px] lg:text-sm font-medium truncate" style="color:#5F6368;">Personalización de Prendas</span>
+      <header
+        class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 px-5 sm:px-8 lg:px-10 pt-6 pb-4 lg:pt-8 lg:pb-6 shrink-0"
+      >
+        <!-- Brand Animation and Name -->
+        <div class="flex items-center gap-3 lg:gap-4 min-w-0">
+          <BrandAnimation />
+          <div class="flex flex-col justify-center min-w-0">
+            <div class="flex items-center gap-2">
+              <span
+                class="gemini-tag text-[9px] lg:text-xs font-bold tracking-widest uppercase truncate"
+                style="color:#fbbc04;">Powered by Gemini 3.1</span
+              >
             </div>
+            <span
+              class="text-[10px] lg:text-sm font-medium truncate"
+              style="color:#5F6368;">Personalización de Prendas</span
+            >
           </div>
+        </div>
 
         <!-- Step indicator — Material style -->
-        <div class="flex items-center gap-3 lg:gap-4 self-center md:self-auto" aria-label="Progreso del pedido">
-          {[1, 2, 3].map((s) => (
-            <div class={`flex items-center gap-2 lg:gap-3 transition-opacity duration-300 ${s > step ? 'opacity-30' : ''}`}>
+        <div
+          class="flex items-center gap-3 lg:gap-4 self-center md:self-auto"
+          aria-label="Progreso del pedido"
+        >
+          {
+            [1, 2, 3].map((s) => (
               <div
-                class={`
+                class={`flex items-center gap-2 lg:gap-3 transition-opacity duration-300 ${s > step ? "opacity-30" : ""}`}
+              >
+                <div
+                  class={`
                   w-7 h-7 lg:w-9 lg:h-9 rounded-full flex items-center justify-center
                   text-xs font-bold transition-all duration-500
-                  ${s < step  ? 'text-white'
-                  : s === step ? 'text-white animate-pulse-glow'
-                  :              'border border-[#DADCE0] text-[#5F6368] bg-white'}
+                  ${
+                    s < step
+                      ? "text-white"
+                      : s === step
+                        ? "text-white animate-pulse-glow"
+                        : "border border-[#DADCE0] text-[#5F6368] bg-white"
+                  }
                 `}
-                style={s <= step ? 'background:#4285F4;' : ''}
-              >
-                {s < step ? '✓' : s}
+                  style={s <= step ? "background:#4285F4;" : ""}
+                >
+                  {s < step ? "✓" : s}
+                </div>
+                {s < 3 && (
+                  <div
+                    class={`w-5 lg:w-10 h-0.5 rounded-full transition-all duration-500 ${s < step ? "bg-[#4285F4] opacity-80" : "bg-[#DADCE0]"}`}
+                  />
+                )}
               </div>
-              {s < 3 && (
-                <div class={`w-5 lg:w-10 h-0.5 rounded-full transition-all duration-500 ${s < step ? 'bg-[#4285F4] opacity-80' : 'bg-[#DADCE0]'}`}></div>
-              )}
-            </div>
-          ))}
+            ))
+          }
         </div>
       </header>
 
@@ -106,39 +142,87 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
         <slot />
       </main>
 
-
       <!-- ── Partner & Event Footer ──────────────────────────────── -->
       <div class="partner-footer">
-
-        <!-- Partner logos / names in grayscale -->
-        <div class="partner-names">
-          <span class="partner-name">Otterock</span>
-          <span class="partner-dot" aria-hidden="true">·</span>
-          <span class="partner-name">Nine</span>
-          <span class="partner-dot" aria-hidden="true">·</span>
-          <span class="partner-name">CUARENT4Y2 S.A.S</span>
+        <!-- Partner logos / names — Typewriter sequence -->
+        <div
+          class="partner-names"
+          aria-label="Otterock · Nine · CUARENT4Y2 S.A.S"
+        >
+          <!-- Each .tw-wrap clips the typing animation via overflow:hidden -->
+          <!-- Otterock: 8 chars × 0.12s = 0.96s → ends ~1.0s -->
+          <span class="tw-wrap">
+            <span
+              class="partner-name tw-text"
+              style="--tw-chars:8; --tw-delay:0s; --tw-loop-delay:30s;"
+              >Otterock</span
+            >
+          </span>
+          <!-- dot appears at 1.05s (just after Otterock finishes) -->
+          <span
+            class="partner-dot tw-dot"
+            style="--tw-dot-delay:1.05s; --tw-loop-delay:31s;"
+            aria-hidden="true">·</span
+          >
+          <!-- Nine: 4 chars × 0.12s = 0.48s → starts 1.15s, ends 1.63s -->
+          <span class="tw-wrap">
+            <span
+              class="partner-name tw-text"
+              style="--tw-chars:4; --tw-delay:1.15s; --tw-loop-delay:31.15s;"
+              >Nine</span
+            >
+          </span>
+          <!-- dot appears at 1.7s -->
+          <span
+            class="partner-dot tw-dot"
+            style="--tw-dot-delay:1.7s; --tw-loop-delay:31.7s;"
+            aria-hidden="true">·</span
+          >
+          <!-- CUARENT4Y2 S.A.S: 16 chars × 0.12s = 1.92s → starts 1.8s -->
+          <span class="tw-wrap">
+            <span
+              class="partner-name tw-text"
+              style="--tw-chars:16; --tw-delay:1.8s; --tw-loop-delay:31.8s;"
+              >CUARENT4Y2 S.A.S</span
+            >
+          </span>
         </div>
 
         <!-- Google Cloud Day badge -->
-        <div class="event-badge" aria-label="Google Cloud Day, 27 de mayo de 2026">
+        <div
+          class="event-badge"
+          aria-label="Google Cloud Day, 27 de mayo de 2026"
+        >
           <!-- Google Cloud icon (SVG cloud) -->
-          <svg class="cloud-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
-              fill="url(#gcl-grad)" />
+          <svg
+            class="cloud-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"
+              fill="url(#gcl-grad)"></path>
             <defs>
-              <linearGradient id="gcl-grad" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
-                <stop offset="0%"   stop-color="#4285F4"/>
-                <stop offset="50%"  stop-color="#34A853"/>
-                <stop offset="100%" stop-color="#FBBC04"/>
+              <linearGradient
+                id="gcl-grad"
+                x1="0"
+                y1="0"
+                x2="24"
+                y2="24"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stop-color="#4285F4"></stop>
+                <stop offset="50%" stop-color="#34A853"></stop>
+                <stop offset="100%" stop-color="#FBBC04"></stop>
               </linearGradient>
             </defs>
           </svg>
           <span class="badge-text">Google Cloud Day</span>
           <span class="badge-date">May 27, 2026</span>
         </div>
-
       </div><!-- end .partner-footer -->
-
     </div><!-- end .kiosk-card -->
   </body>
 </html>
@@ -146,7 +230,7 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
 <style>
   /* ── White page background ── */
   html {
-    background: #FFFFFF;
+    background: #ffffff;
     min-height: 100vh;
   }
 
@@ -156,7 +240,7 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     inset: 0;
     z-index: 0;
     /* Subtle dot pattern — dots at every 28px, 1.5px radius */
-    background-image: radial-gradient(circle, #DADCE0 1.5px, transparent 1.5px);
+    background-image: radial-gradient(circle, #dadce0 1.5px, transparent 1.5px);
     background-size: 28px 28px;
     pointer-events: none;
     /* Very light so it's only barely visible on white */
@@ -171,9 +255,20 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
   }
 
   @keyframes gemini-fade {
-    0%, 75% { opacity: 0; transform: translateY(4px); }
-    80%, 95% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-4px); }
+    0%,
+    75% {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    80%,
+    95% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
   }
 
   /* ── Body centers the card on wide screens ── */
@@ -196,7 +291,7 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #FFFFFF;
+    background: #ffffff;
   }
 
   /* ── Desktop: elevated Material card floating on the dot-grid ── */
@@ -212,11 +307,11 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
       max-width: 1180px;
       min-height: auto;
       border-radius: 1.75rem;
-      background: #FFFFFF;
-      border: 1px solid #DADCE0;
+      background: #ffffff;
+      border: 1px solid #dadce0;
       box-shadow:
         0 1px 3px rgba(60, 64, 67, 0.12),
-        0 8px 40px rgba(60, 64, 67, 0.10),
+        0 8px 40px rgba(60, 64, 67, 0.1),
         0 24px 64px rgba(60, 64, 67, 0.06);
     }
   }
@@ -230,7 +325,7 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     align-items: center;
     gap: 0.75rem;
     padding: 1rem 1.25rem 1.5rem;
-    border-top: 1px solid #F1F3F4;
+    border-top: 1px solid #f1f3f4;
   }
 
   @media (min-width: 640px) {
@@ -247,7 +342,7 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     }
   }
 
-  /* Partner name list */
+  /* ── Partner name list ── */
   .partner-names {
     display: flex;
     align-items: center;
@@ -259,19 +354,89 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     font-weight: 600;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #80868B;   /* grayscale — neutral, unobtrusive */
+    color: #80868b;
     transition: color 200ms ease;
   }
-
   .partner-name:hover {
-    color: #5F6368;
+    color: #5f6368;
   }
 
   .partner-dot {
-    color: #DADCE0;
+    color: #dadce0;
     font-weight: 400;
     font-size: 1rem;
     line-height: 1;
+  }
+
+  /* ── Typewriter engine ──────────────────────────────────────────
+     Font: Roboto Mono ensures every char = exactly 1ch (monospace).
+     .tw-wrap  : clips overflowing text via overflow:hidden
+     .tw-text  : animates width using `ch` units for pixel-perfect steps
+     CSS custom props:
+       --tw-chars      : character count of this word
+       --tw-delay      : first-load start time
+       --tw-loop-delay : loop restart time (every 30s)
+  ─────────────────────────────────────────────────────────────── */
+  .tw-wrap {
+    display: inline-flex;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  /* Roboto Mono applied ONLY to the typing text — guarantees 1 char = 1ch */
+  .tw-text {
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    /* Google Blue cursor — disappears when done */
+    border-right: 2px solid transparent;
+    /* First-load: type in, blink 6×, cursor fades, then loop */
+    animation:
+      tw-type        calc(var(--tw-chars) * 0.12s) steps(var(--tw-chars), end) var(--tw-delay) both,
+      tw-cursor      0.65s step-end var(--tw-delay) 6,
+      tw-cursor-fade calc(var(--tw-chars) * 0.12s + 0.3s) ease var(--tw-delay) both,
+      tw-type-loop   20s   steps(var(--tw-chars), end) var(--tw-loop-delay) infinite;
+  }
+
+  /* Typing: 0 → N characters wide, using ch (= 1 char in monospace) */
+  @keyframes tw-type {
+    from { width: 0ch; }
+    to   { width: calc(var(--tw-chars) * 1ch); }
+  }
+
+  /* Cursor: Google Blue blink */
+  @keyframes tw-cursor {
+    0%, 49%  { border-right-color: #4285F4; }
+    50%, 100% { border-right-color: transparent; }
+  }
+  /* Cursor fade-out after typing completes */
+  @keyframes tw-cursor-fade {
+    0%   { border-right-color: #4285F4; }
+    70%  { border-right-color: #4285F4; }
+    100% { border-right-color: transparent; }
+  }
+
+  /* Loop: type in → hold → erase → wait → repeat */
+  @keyframes tw-type-loop {
+    0%   { width: 0ch; }
+    35%  { width: calc(var(--tw-chars) * 1ch); }
+    75%  { width: calc(var(--tw-chars) * 1ch); }
+    90%  { width: 0ch; }
+    100% { width: 0ch; }
+  }
+
+  /* Dots appear immediately after the preceding word finishes */
+  .tw-dot {
+    opacity: 0;
+    animation:
+      tw-dot-appear 0.15s ease var(--tw-dot-delay) both,
+      tw-dot-appear 0.15s ease var(--tw-loop-delay) infinite;
+  }
+  @keyframes tw-dot-appear {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   /* Google Cloud Day badge */
@@ -281,13 +446,15 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     gap: 0.45rem;
     padding: 0.4rem 0.9rem;
     border-radius: 9999px;
-    border: 1px solid #DADCE0;
-    background: #F8F9FA;
-    transition: border-color 200ms ease, box-shadow 200ms ease;
+    border: 1px solid #dadce0;
+    background: #f8f9fa;
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
   }
 
   .event-badge:hover {
-    border-color: #4285F4;
+    border-color: #4285f4;
     box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12);
   }
 
@@ -301,23 +468,34 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    color: #5F6368;
+    color: #5f6368;
   }
 
   .badge-date {
     font-size: 0.72rem;
     font-weight: 500;
-    color: #80868B;
+    color: #80868b;
     padding-left: 0.25rem;
-    border-left: 1px solid #DADCE0;
+    border-left: 1px solid #dadce0;
     margin-left: 0.1rem;
   }
 
   @media (min-width: 1024px) {
-    .partner-name  { font-size: 0.82rem; }
+    .partner-name {
+      font-size: 0.82rem;
+    }
+    /* Widen char slots at lg so wider font size renders cleanly */
+    .tw-text {
+      animation-timing-function: steps(var(--tw-chars), end);
+    }
     .badge-text,
-    .badge-date    { font-size: 0.8rem; }
-    .cloud-icon    { width: 1.1rem; height: 1.1rem; }
+    .badge-date {
+      font-size: 0.8rem;
+    }
+    .cloud-icon {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════════════════════════════
@@ -359,15 +537,17 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
   /* The spinning conic gradient — 0deg = 12 o'clock = Top-Center */
   .led-spinner {
     position: absolute;
-    top: -50%; left: -50%;
-    width: 200%; height: 200%;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
     background: conic-gradient(
       from 0deg,
-      var(--color-google-blue)    0deg,
-      var(--color-google-red)    90deg,
+      var(--color-google-blue) 0deg,
+      var(--color-google-red) 90deg,
       var(--color-google-yellow) 180deg,
-      var(--color-google-green)  270deg,
-      var(--color-google-blue)   360deg
+      var(--color-google-green) 270deg,
+      var(--color-google-blue) 360deg
     );
     /* Pop the Google colors hard against the white surface */
     filter: saturate(2) brightness(1.3);
@@ -375,7 +555,9 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
   }
 
   @keyframes energy-spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /*
@@ -388,35 +570,31 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
    *   87.5% Blue  (Top-Left)         <- was previously 95%
    */
   @keyframes neon-glow-shift {
-    0%, 100% {
-      filter:
-        drop-shadow(0 0 14px rgba(66,  133, 244, 1.0))
-        drop-shadow(0 0 38px rgba(66,  133, 244, 0.6))
-        drop-shadow(0 0 72px rgba(66,  133, 244, 0.25));
+    0%,
+    100% {
+      filter: drop-shadow(0 0 14px rgba(66, 133, 244, 1))
+        drop-shadow(0 0 38px rgba(66, 133, 244, 0.6))
+        drop-shadow(0 0 72px rgba(66, 133, 244, 0.25));
     }
     12.5% {
-      filter:
-        drop-shadow(0 0 14px rgba(234,  67,  53, 1.0))
-        drop-shadow(0 0 38px rgba(234,  67,  53, 0.6))
-        drop-shadow(0 0 72px rgba(234,  67,  53, 0.25));
+      filter: drop-shadow(0 0 14px rgba(234, 67, 53, 1))
+        drop-shadow(0 0 38px rgba(234, 67, 53, 0.6))
+        drop-shadow(0 0 72px rgba(234, 67, 53, 0.25));
     }
     37.5% {
-      filter:
-        drop-shadow(0 0 14px rgba(251, 188,   4, 1.0))
-        drop-shadow(0 0 38px rgba(251, 188,   4, 0.7))
-        drop-shadow(0 0 72px rgba(251, 188,   4, 0.30));
+      filter: drop-shadow(0 0 14px rgba(251, 188, 4, 1))
+        drop-shadow(0 0 38px rgba(251, 188, 4, 0.7))
+        drop-shadow(0 0 72px rgba(251, 188, 4, 0.3));
     }
     62.5% {
-      filter:
-        drop-shadow(0 0 14px rgba( 52, 168,  83, 1.0))
-        drop-shadow(0 0 38px rgba( 52, 168,  83, 0.6))
-        drop-shadow(0 0 72px rgba( 52, 168,  83, 0.25));
+      filter: drop-shadow(0 0 14px rgba(52, 168, 83, 1))
+        drop-shadow(0 0 38px rgba(52, 168, 83, 0.6))
+        drop-shadow(0 0 72px rgba(52, 168, 83, 0.25));
     }
     87.5% {
-      filter:
-        drop-shadow(0 0 14px rgba(66,  133, 244, 1.0))
-        drop-shadow(0 0 38px rgba(66,  133, 244, 0.6))
-        drop-shadow(0 0 72px rgba(66,  133, 244, 0.25));
+      filter: drop-shadow(0 0 14px rgba(66, 133, 244, 1))
+        drop-shadow(0 0 38px rgba(66, 133, 244, 0.6))
+        drop-shadow(0 0 72px rgba(66, 133, 244, 0.25));
     }
   }
 
@@ -431,10 +609,26 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
     z-index: -1;
   }
 
-  .bulb-tl { top: -14vw;    left: -14vw;   animation: bulb-sync-tl 20s ease-in-out infinite; }
-  .bulb-tr { top: -14vw;    right: -14vw;  animation: bulb-sync-tr 20s ease-in-out infinite; }
-  .bulb-br { bottom: -14vw; right: -14vw;  animation: bulb-sync-br 20s ease-in-out infinite; }
-  .bulb-bl { bottom: -14vw; left: -14vw;   animation: bulb-sync-bl 20s ease-in-out infinite; }
+  .bulb-tl {
+    top: -14vw;
+    left: -14vw;
+    animation: bulb-sync-tl 20s ease-in-out infinite;
+  }
+  .bulb-tr {
+    top: -14vw;
+    right: -14vw;
+    animation: bulb-sync-tr 20s ease-in-out infinite;
+  }
+  .bulb-br {
+    bottom: -14vw;
+    right: -14vw;
+    animation: bulb-sync-br 20s ease-in-out infinite;
+  }
+  .bulb-bl {
+    bottom: -14vw;
+    left: -14vw;
+    animation: bulb-sync-bl 20s ease-in-out infinite;
+  }
 
   /*
    * FINAL SYNC TIMING — exactly matching user spec (20s loop):
@@ -447,37 +641,94 @@ const { title = 'Personalización de Prendas', step = 1 } = Astro.props;
    */
 
   @keyframes bulb-sync-tr {
-    0%, 8%     { opacity: 0;    background-color: var(--color-google-red); }
-    10%        { opacity: 0.25; }
-    12.5%      { opacity: 0.80; background-color: var(--color-google-red); }
-    15%        { opacity: 0.25; }
-    17%, 100%  { opacity: 0;    background-color: var(--color-google-red); }
+    0%,
+    8% {
+      opacity: 0;
+      background-color: var(--color-google-red);
+    }
+    10% {
+      opacity: 0.25;
+    }
+    12.5% {
+      opacity: 0.8;
+      background-color: var(--color-google-red);
+    }
+    15% {
+      opacity: 0.25;
+    }
+    17%,
+    100% {
+      opacity: 0;
+      background-color: var(--color-google-red);
+    }
   }
 
   @keyframes bulb-sync-br {
-    0%, 33%    { opacity: 0;    background-color: var(--color-google-yellow); }
-    35%        { opacity: 0.25; }
-    37.5%      { opacity: 0.80; background-color: var(--color-google-yellow); }
-    40%        { opacity: 0.25; }
-    42%, 100%  { opacity: 0;    background-color: var(--color-google-yellow); }
+    0%,
+    33% {
+      opacity: 0;
+      background-color: var(--color-google-yellow);
+    }
+    35% {
+      opacity: 0.25;
+    }
+    37.5% {
+      opacity: 0.8;
+      background-color: var(--color-google-yellow);
+    }
+    40% {
+      opacity: 0.25;
+    }
+    42%,
+    100% {
+      opacity: 0;
+      background-color: var(--color-google-yellow);
+    }
   }
 
   @keyframes bulb-sync-bl {
-    0%, 58%    { opacity: 0;    background-color: var(--color-google-green); }
-    60%        { opacity: 0.25; }
-    62.5%      { opacity: 0.80; background-color: var(--color-google-green); }
-    65%        { opacity: 0.25; }
-    67%, 100%  { opacity: 0;    background-color: var(--color-google-green); }
+    0%,
+    58% {
+      opacity: 0;
+      background-color: var(--color-google-green);
+    }
+    60% {
+      opacity: 0.25;
+    }
+    62.5% {
+      opacity: 0.8;
+      background-color: var(--color-google-green);
+    }
+    65% {
+      opacity: 0.25;
+    }
+    67%,
+    100% {
+      opacity: 0;
+      background-color: var(--color-google-green);
+    }
   }
 
   @keyframes bulb-sync-tl {
     /* Resting */
-    0%, 88%         { opacity: 0;   background-color: var(--color-google-blue); }
+    0%,
+    88% {
+      opacity: 0;
+      background-color: var(--color-google-blue);
+    }
     /* Rise */
-    91%             { opacity: 0.2; }
+    91% {
+      opacity: 0.2;
+    }
     /* Peak: TL at 95% */
-    95%             { opacity: 0.70; background-color: var(--color-google-blue); }
+    95% {
+      opacity: 0.7;
+      background-color: var(--color-google-blue);
+    }
     /* Fall into reset */
-    100%            { opacity: 0;   background-color: var(--color-google-blue); }
+    100% {
+      opacity: 0;
+      background-color: var(--color-google-blue);
+    }
   }
 </style>
