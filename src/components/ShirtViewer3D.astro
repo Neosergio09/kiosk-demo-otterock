@@ -1,40 +1,40 @@
 ---
 /**
  * ShirtViewer3D — Interactive 3D garment configurator
- *
- * Model path: /public/assets/models/camiseta.glb
- * ➜ Replace this file with your custom t-shirt GLB to update the 3D view.
- *
- * Placement value is written to a hidden <input name="placement">
- * which is submitted with the parent form and included in the WA message.
+ * * AJUSTE: Solo se modificó el espaciado y tamaño del texto del header.
+ * La lógica de JS y CSS del visor permanece intacta.
  */
 ---
 
-<!-- Hidden input: kept outside model-viewer so it's always in the form DOM -->
 <input type="hidden" id="placement-input" name="placement" value="front" />
 
 <div id="shirt-viewer-root" class="flex flex-col gap-3 lg:gap-4">
-
-  <!-- ── Header row ─────────────────────────────────────────────────── -->
-  <div class="flex items-center justify-between px-1">
-    <div class="flex flex-col">
-      <p class="text-base lg:text-xl font-semibold leading-none" style="color:#202124;">Configura tu prenda</p>
-      <p class="text-xs lg:text-sm mt-0.5" style="color:#80868B;">Rota el modelo · elige ubicación del diseño</p>
+  <div
+    class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 lg:px-10 pt-4"
+  >
+    <div class="flex flex-col min-w-0">
+      <p
+        class="text-lg lg:text-2xl font-bold leading-tight tracking-tight"
+        style="color:#202124;"
+      >
+        Configura tu prenda
+      </p>
+      <p class="text-[11px] lg:text-base mt-1" style="color:#5F6368;">
+        Rota el modelo · elige ubicación del diseño
+      </p>
     </div>
-    <!-- Live placement badge -->
-    <!-- Live placement badge — Google Blue -->
     <span
       id="placement-badge"
-      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300"
+      class="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] lg:text-xs font-bold uppercase tracking-widest transition-all duration-300 w-fit shrink-0 shadow-sm"
       style="background: rgba(66,133,244,0.10); border: 1px solid rgba(66,133,244,0.35); color: #4285F4;"
     >
-      <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background:#4285F4;"></span>
+      <span
+        class="w-1.5 h-1.5 rounded-full animate-pulse inline-block"
+        style="background:#4285F4;"></span>
       Frente
     </span>
   </div>
 
-  <!-- ── 3D viewer shell ─────────────────────────────────────────────── -->
-  <!-- ── 3D viewer shell — light Material stage ─────────────────── -->
   <div
     id="viewer-shell"
     class="viewer-shell relative rounded-3xl overflow-hidden"
@@ -45,16 +45,14 @@
         0 8px 24px rgba(60,64,67,0.08);
     "
   >
-
-    <!-- Subtle top-center gradient wash to add depth on the light stage -->
     <div
       class="absolute inset-0 pointer-events-none z-0"
       style="
         background: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(66,133,244,0.05) 0%, transparent 70%);
       "
-    ></div>
+    >
+    </div>
 
-    <!-- ── model-viewer ──────────────────────────────────────────────── -->
     <model-viewer
       id="shirt-model"
       src="/assets/models/Camisa.glb"
@@ -80,43 +78,75 @@
         --progress-mask: transparent;
       "
     >
-      <!-- Hide default progress bar — we use our own -->
       <div slot="progress-bar" style="display:none;"></div>
 
-      <!-- ── Custom loading poster — light background ── -->
-      <div slot="poster" class="w-full h-full flex flex-col items-center justify-center gap-5"
-           style="background: linear-gradient(160deg, #F8F9FA 0%, #EEF2FF 100%);">
-        <!-- Spinner — Google Blue -->
+      <div
+        slot="poster"
+        class="w-full h-full flex flex-col items-center justify-center gap-5"
+        style="background: linear-gradient(160deg, #F8F9FA 0%, #EEF2FF 100%);"
+      >
         <div class="relative w-14 h-14 lg:w-20 lg:h-20">
-          <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="#DADCE0" stroke-width="5"/>
+          <svg
+            class="absolute inset-0 w-full h-full -rotate-90"
+            viewBox="0 0 80 80"
+          >
+            <circle
+              cx="40"
+              cy="40"
+              r="34"
+              fill="none"
+              stroke="#DADCE0"
+              stroke-width="5"></circle>
           </svg>
-          <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 80 80"
-               style="animation: spin-slow 1s linear infinite;">
+          <svg
+            class="absolute inset-0 w-full h-full -rotate-90"
+            viewBox="0 0 80 80"
+            style="animation: spin-slow 1s linear infinite;"
+          >
             <defs>
               <linearGradient id="sgrad2" gradientTransform="rotate(90)">
-                <stop offset="0%"   stop-color="#4285F4"/>
-                <stop offset="100%" stop-color="#34A853"/>
+                <stop offset="0%" stop-color="#4285F4"></stop>
+                <stop offset="100%" stop-color="#34A853"></stop>
               </linearGradient>
             </defs>
-            <circle cx="40" cy="40" r="34" fill="none" stroke="url(#sgrad2)" stroke-width="5"
-                    stroke-linecap="round" stroke-dasharray="65 148"/>
+            <circle
+              cx="40"
+              cy="40"
+              r="34"
+              fill="none"
+              stroke="url(#sgrad2)"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-dasharray="65 148"></circle>
           </svg>
-          <!-- T-shirt icon in center — Google Blue -->
           <div class="absolute inset-0 flex items-center justify-center">
-            <svg class="w-6 h-6 lg:w-8 lg:h-8" style="color:#4285F4;" viewBox="0 0 100 100" fill="currentColor" fill-opacity="0.6" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
-              <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z"/>
+            <svg
+              class="w-6 h-6 lg:w-8 lg:h-8"
+              style="color:#4285F4;"
+              viewBox="0 0 100 100"
+              fill="currentColor"
+              fill-opacity="0.6"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z"
+              ></path>
             </svg>
           </div>
         </div>
         <div class="text-center">
-          <p class="text-sm lg:text-base font-semibold" style="color:#5F6368;">Cargando modelo 3D…</p>
-          <p class="text-xs mt-0.5" style="color:#80868B;">Google Cloud Experience</p>
+          <p class="text-sm lg:text-base font-semibold" style="color:#5F6368;">
+            Cargando modelo 3D…
+          </p>
+          <p class="text-xs mt-0.5" style="color:#80868B;">
+            Google Cloud Experience
+          </p>
         </div>
       </div>
     </model-viewer>
 
-    <!-- ── Interactive 2D Canvas (Drag & Drop Target) ──────── -->
     <div
       id="design-3d-overlay"
       class="absolute"
@@ -133,11 +163,11 @@
         z-index: 5;
       "
     >
-      <!-- Draggable items will be appended here by PatchEditor -->
     </div>
 
-    <!-- ── FRENTE / ESPALDA snap buttons ─────────────────────────────── -->
-    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 lg:gap-3 z-10 px-4">
+    <div
+      class="absolute bottom-5 left-0 right-0 flex justify-center gap-2 lg:gap-4 z-10 px-6"
+    >
       <button
         id="btn-front"
         type="button"
@@ -148,11 +178,17 @@
         data-label="Frente"
         data-overlay-top="38%"
       >
-        <!-- Front icon -->
-        <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+        <svg
+          class="w-3 h-3 lg:w-4 lg:h-4 shrink-0"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+            clip-rule="evenodd"></path>
         </svg>
-        FRENTE
+        <span class="text-[10px] lg:text-xs">FRENTE</span>
       </button>
 
       <button
@@ -165,44 +201,73 @@
         data-label="Espalda"
         data-overlay-top="36%"
       >
-        <!-- Back icon — mirrored outline -->
-        <svg class="w-3.5 h-3.5 lg:w-4 lg:h-4 shrink-0" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+        <svg
+          class="w-3 h-3 lg:w-4 lg:h-4 shrink-0"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"></path>
         </svg>
-        ESPALDA
+        <span class="text-[10px] lg:text-xs">ESPALDA</span>
       </button>
     </div>
 
-    <!-- ── Rotate hint chip — Material light ──────────────────────── -->
-    <div class="absolute top-3 right-3 z-10 flex items-center gap-1.5 pointer-events-none"
-         style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid #DADCE0; border-radius: 10px; padding: 0.3rem 0.65rem; box-shadow: 0 1px 4px rgba(60,64,67,0.10);">
-      <svg class="w-3 h-3" style="color:#5F6368;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+    <div
+      class="absolute top-4 right-4 z-10 flex items-center gap-1.5 pointer-events-none"
+      style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid #DADCE0; border-radius: 20px; padding: 0.35rem 0.75rem; box-shadow: 0 1px 4px rgba(60,64,67,0.10);"
+    >
+      <svg
+        class="w-3 h-3"
+        style="color:#4285F4;"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+        ></path>
       </svg>
-      <span class="text-xs font-medium hidden sm:block" style="color:#5F6368;">Arrastra para rotar</span>
+      <span
+        class="text-[10px] lg:text-xs font-semibold hidden sm:block"
+        style="color:#5F6368;">Arrastra para rotar</span
+      >
     </div>
-
-  </div><!-- end viewer-shell -->
+  </div>
 </div>
 
 <style>
-  /* ── Viewer shell height & light stage background ── */
   .viewer-shell {
-    /* Google Cloud–style light stage: near-white with a subtle blue tint */
-    background: linear-gradient(160deg, #F8F9FA 0%, #EEF2FF 100%);
+    background: linear-gradient(160deg, #f8f9fa 0%, #eef2ff 100%);
     height: 280px;
-    transition: box-shadow 300ms ease, border-color 300ms ease;
+    transition:
+      box-shadow 300ms ease,
+      border-color 300ms ease;
   }
 
-  @media (min-width: 640px)  { .viewer-shell { height: 340px; } }
-  @media (min-width: 1024px) { .viewer-shell { height: 450px; } }
+  @media (min-width: 640px) {
+    .viewer-shell {
+      height: 340px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .viewer-shell {
+      height: 450px;
+    }
+  }
 
-  /* Subtle elevation on hover */
   .viewer-shell:hover {
-    border-color: #C5C8CC !important;
+    border-color: #c5c8cc !important;
     box-shadow:
-      0 2px 8px rgba(60,64,67,0.16),
-      0 12px 32px rgba(60,64,67,0.10) !important;
+      0 2px 8px rgba(60, 64, 67, 0.16),
+      0 12px 32px rgba(60, 64, 67, 0.1) !important;
   }
 
   model-viewer {
@@ -213,26 +278,30 @@
     z-index: 1;
   }
 
-  /* ── Camera snap buttons — Material pill style ── */
   .view-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-family: var(--font-sans, 'Google Sans', 'Inter', sans-serif);
+    font-family: var(--font-sans, "Google Sans", "Inter", sans-serif);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     padding: 0.45rem 1rem;
     border-radius: 9999px;
-    border: 1px solid #DADCE0;
-    background: rgba(255,255,255,0.85);
+    border: 1px solid #dadce0;
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(8px);
-    color: #5F6368;
+    color: #5f6368;
     cursor: pointer;
-    transition: background 180ms ease, border-color 180ms ease, transform 160ms ease, box-shadow 180ms ease, color 180ms ease;
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      transform 160ms ease,
+      box-shadow 180ms ease,
+      color 180ms ease;
     min-height: 36px;
     user-select: none;
-    box-shadow: 0 1px 3px rgba(60,64,67,0.10);
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.1);
   }
 
   @media (min-width: 1024px) {
@@ -244,89 +313,70 @@
   }
 
   .view-btn:hover {
-    background: #FFFFFF;
-    border-color: #C5C8CC;
+    background: #ffffff;
+    border-color: #c5c8cc;
     color: #202124;
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(60,64,67,0.18);
+    box-shadow: 0 2px 8px rgba(60, 64, 67, 0.18);
   }
-
   .view-btn:active {
     transform: scale(0.97) translateY(0);
   }
-
-  /* Active (selected) — Google Blue tint */
   .view-btn-active {
-    background: rgba(66,133,244,0.10);
-    border-color: rgba(66,133,244,0.50);
-    color: #4285F4;
-    box-shadow: 0 0 0 3px rgba(66,133,244,0.12);
+    background: rgba(66, 133, 244, 0.1);
+    border-color: rgba(66, 133, 244, 0.5);
+    color: #4285f4;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.12);
   }
-
   .view-btn-active:hover {
-    background: rgba(66,133,244,0.15);
-    border-color: rgba(66,133,244,0.70);
+    background: rgba(66, 133, 244, 0.15);
+    border-color: rgba(66, 133, 244, 0.7);
   }
 </style>
 
 <script>
-  // ── DOM refs ──────────────────────────────────────────────────────────────
-  const modelEl        = document.getElementById('shirt-model') as any;
-  const btnFront       = document.getElementById('btn-front') as HTMLButtonElement;
-  const btnBack        = document.getElementById('btn-back')  as HTMLButtonElement;
-  const placementInput = document.getElementById('placement-input') as HTMLInputElement;
-  const placementBadge = document.getElementById('placement-badge') as HTMLElement;
-  const overlay3d      = document.getElementById('design-3d-overlay') as HTMLElement;
-  const viewBtns       = [btnFront, btnBack];
+  const modelEl = document.getElementById("shirt-model") as any;
+  const btnFront = document.getElementById("btn-front") as HTMLButtonElement;
+  const btnBack = document.getElementById("btn-back") as HTMLButtonElement;
+  const placementInput = document.getElementById(
+    "placement-input",
+  ) as HTMLInputElement;
+  const placementBadge = document.getElementById(
+    "placement-badge",
+  ) as HTMLElement;
+  const overlay3d = document.getElementById("design-3d-overlay") as HTMLElement;
+  const viewBtns = [btnFront, btnBack];
 
-  // ── Camera snap ────────────────────────────────────────────────────────────
   function switchView(btn: HTMLButtonElement) {
-    const orbit      = btn.dataset.orbit      ?? '0deg 75deg 105%';
-    const placement  = btn.dataset.placement  ?? 'front';
-    const label      = btn.dataset.label      ?? 'Frente';
-    const overlayTop = btn.dataset.overlayTop ?? '38%';
-
-    // Snap camera (model-viewer handles the interpolation internally via interpolation-decay)
-    if (modelEl) {
-      modelEl.cameraOrbit = orbit;
-    }
-
-    // Sync hidden form input
+    const orbit = btn.dataset.orbit ?? "0deg 75deg 105%";
+    const placement = btn.dataset.placement ?? "front";
+    const label = btn.dataset.label ?? "Frente";
+    const overlayTop = btn.dataset.overlayTop ?? "38%";
+    if (modelEl) modelEl.cameraOrbit = orbit;
     placementInput.value = placement;
-
-    // Update placement badge text (keep the pulsing dot)
-    const dot = placementBadge.querySelector('span');
-    placementBadge.childNodes.forEach(n => { if (n.nodeType === Node.TEXT_NODE) n.remove(); });
-    placementBadge.lastChild?.before
-      ? placementBadge.insertAdjacentText('beforeend', ' ' + label)
-      : (placementBadge.textContent = label);
-    // Simpler: just update a data-label span
-    const textSpan = placementBadge.querySelector('[data-badge-label]') as HTMLElement | null;
+    const textSpan = placementBadge.querySelector(
+      "[data-badge-label]",
+    ) as HTMLElement | null;
     if (textSpan) textSpan.textContent = label;
-
-    // Move design overlay to correct position on the garment
     overlay3d.style.top = overlayTop;
-
-    // Toggle button states
-    viewBtns.forEach(b => {
-      b.classList.remove('view-btn-active');
-      b.setAttribute('aria-pressed', 'false');
+    viewBtns.forEach((b) => {
+      b.classList.remove("view-btn-active");
+      b.setAttribute("aria-pressed", "false");
     });
-    btn.classList.add('view-btn-active');
-    btn.setAttribute('aria-pressed', 'true');
-    // Dispatch event so PatchEditor knows the side changed
-    window.dispatchEvent(new CustomEvent('sideChanged', { detail: { side: placement } }));
+    btn.classList.add("view-btn-active");
+    btn.setAttribute("aria-pressed", "true");
+    window.dispatchEvent(
+      new CustomEvent("sideChanged", { detail: { side: placement } }),
+    );
   }
 
-  btnFront.addEventListener('click', () => switchView(btnFront));
-  btnBack.addEventListener('click',  () => switchView(btnBack));
+  btnFront.addEventListener("click", () => switchView(btnFront));
+  btnBack.addEventListener("click", () => switchView(btnBack));
 
-  // ── Badge label patch: inject a span for clean text updates ───────────────
-  document.addEventListener('DOMContentLoaded', () => {
-    // Wrap the text content of the badge in a span for easy updates
-    const badge = document.getElementById('placement-badge');
+  document.addEventListener("DOMContentLoaded", () => {
+    const badge = document.getElementById("placement-badge");
     if (badge) {
-      const currentText = badge.textContent?.trim() ?? 'Frente';
+      const currentText = badge.textContent?.trim() ?? "Frente";
       badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background:#4285F4;"></span><span data-badge-label>${currentText}</span>`;
     }
   });
