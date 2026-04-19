@@ -78,7 +78,7 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
     <div class="kiosk-card">
       <!-- ── Header ── -->
       <header
-        class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 px-5 sm:px-8 lg:px-10 pt-6 pb-4 lg:pt-8 lg:pb-6 shrink-0"
+        class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6 px-5 sm:px-8 lg:px-10 pt-5 md:pt-6 pb-4 lg:pt-8 lg:pb-6 shrink-0"
       >
         <!-- Brand Animation and Name -->
         <div class="flex items-center gap-3 lg:gap-4 min-w-0">
@@ -279,8 +279,8 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
     justify-content: center;
     position: relative;
     z-index: 1;
-    /* Offset content from the 15px LED border on mobile */
-    padding: 15px;
+    /* Offset content from the 8px/15px LED border on mobile */
+    padding: clamp(8px, 2vw, 15px);
   }
 
   /* ── Mobile: flush, full-width white card ── */
@@ -505,9 +505,12 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
      T=12.5s (62.5%) BL | T=17.5s (87.5%) TL
   ═══════════════════════════════════════════════════════════════════════════════════════════════════ */
 
-  /* 15px ring shell — mask punches out the center, inset shadow softens inner edge */
+  /* LED perimeter: thinner on mobile (8px) vs desktop (15px) */
   .led-mask-shell {
-    padding: 15px;
+    padding: 8px;
+    @media (min-width: 1024px) {
+      padding: 15px;
+    }
     /* Carve the inner rectangle transparent so only the 15px ring is visible */
     -webkit-mask:
       linear-gradient(#fff 0 0) content-box,
@@ -527,7 +530,10 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
   /* Inset white vignette that sits above the content, fading the LED into the white bg */
   .led-inner-fade {
     position: absolute;
-    inset: 15px; /* inset by the LED thickness */
+    inset: 8px; /* inset by the LED thickness */
+    @media (min-width: 1024px) {
+      inset: 15px;
+    }
     pointer-events: none;
     box-shadow: inset 0 0 28px 14px #ffffff;
     z-index: 1; /* above content but below interactive ui */

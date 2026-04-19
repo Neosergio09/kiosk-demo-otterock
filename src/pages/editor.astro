@@ -45,9 +45,9 @@ const actionError = result?.error;
       </div>
 
       <!-- Headline -->
-      <div class="text-center mb-8 animate-fadeInUp" style="animation-delay:.1s">
-        <h1 class="text-5xl lg:text-8xl font-black leading-none mb-3" style="color:#34A853;">¡Pedido Listo!</h1>
-        <p class="text-xl lg:text-3xl font-medium" style="color:#5F6368;">Tu diseño ha sido enviado exitosamente.</p>
+      <div class="text-center mb-6 lg:mb-8 animate-fadeInUp" style="animation-delay:.1s">
+        <h1 class="text-4xl sm:text-5xl lg:text-8xl font-black leading-tight mb-3" style="color:#34A853;">¡Pedido Listo!</h1>
+        <p class="text-lg sm:text-xl lg:text-3xl font-medium" style="color:#5F6368;">Tu diseño ha sido enviado exitosamente.</p>
       </div>
 
       <!-- Visual order summary — Material white cards -->
@@ -58,23 +58,20 @@ const actionError = result?.error;
         <p class="text-xs lg:text-sm font-semibold uppercase tracking-widest mb-5" style="color:#80868B;">Resumen del Pedido</p>
 
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Color card -->
-          <div class="rounded-2xl p-4 lg:p-6 flex flex-col gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
-            <span class="text-2xl lg:text-4xl">🎨</span>
-            <span class="text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Color</span>
-            <span class="text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.colorLabel}</span>
+          <div class="rounded-2xl p-3 sm:p-4 lg:p-6 flex flex-col gap-1 sm:gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
+            <span class="text-xl sm:text-2xl lg:text-4xl">🎨</span>
+            <span class="text-[10px] sm:text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Color</span>
+            <span class="text-base sm:text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.colorLabel}</span>
           </div>
-          <!-- Size card -->
-          <div class="rounded-2xl p-4 lg:p-6 flex flex-col gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
-            <span class="text-2xl lg:text-4xl">📏</span>
-            <span class="text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Talla</span>
-            <span class="text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.size}</span>
+          <div class="rounded-2xl p-3 sm:p-4 lg:p-6 flex flex-col gap-1 sm:gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
+            <span class="text-xl sm:text-2xl lg:text-4xl">📏</span>
+            <span class="text-[10px] sm:text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Talla</span>
+            <span class="text-base sm:text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.size}</span>
           </div>
-          <!-- Patches card -->
-          <div class="rounded-2xl p-4 lg:p-6 flex flex-col gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
-            <span class="text-2xl lg:text-4xl">✨</span>
-            <span class="text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Parches</span>
-            <span class="text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.patchesCount}</span>
+          <div class="rounded-2xl p-3 sm:p-4 lg:p-6 flex flex-col gap-1 sm:gap-2 border border-[#DADCE0]" style="background:#F8F9FA;">
+            <span class="text-xl sm:text-2xl lg:text-4xl">✨</span>
+            <span class="text-[10px] sm:text-xs lg:text-sm uppercase tracking-widest font-semibold" style="color:#80868B;">Parches</span>
+            <span class="text-base sm:text-lg lg:text-2xl font-bold capitalize" style="color:#202124;">{result.data.order.patchesCount}</span>
           </div>
         </div>
       </div>
@@ -145,7 +142,7 @@ const actionError = result?.error;
         style="background: rgba(255,255,255,0.94); backdrop-filter: blur(8px);"
       >
         <!-- Spinner — Google Blue -->
-        <div class="relative w-40 h-40 lg:w-52 lg:h-52">
+        <div class="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-52 lg:h-52">
           <svg class="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 200 200">
             <circle cx="100" cy="100" r="88" fill="none" stroke="#DADCE0" stroke-width="8"/>
           </svg>
@@ -171,9 +168,9 @@ const actionError = result?.error;
           </div>
         </div>
 
-        <div class="text-center">
-          <p class="text-4xl lg:text-5xl font-black mb-2" style="color:#202124;">Enviando Pedido…</p>
-          <p class="text-lg lg:text-2xl" style="color:#5F6368;">Subiendo tu diseño y generando el enlace</p>
+        <div class="text-center px-4">
+          <p class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2" style="color:#202124;">Enviando Pedido…</p>
+          <p class="text-base sm:text-lg lg:text-2xl" style="color:#5F6368;">Subiendo tu diseño y generando el enlace</p>
         </div>
 
         <!-- Step pills — Material white cards -->
@@ -184,11 +181,11 @@ const actionError = result?.error;
             ['📲', 'Preparando enlace de WhatsApp'],
           ].map(([em, txt], i) => (
             <div
-              class="flex items-center gap-4 rounded-xl lg:rounded-2xl px-5 py-4 lg:py-5 border border-[#DADCE0]"
+              class="flex items-center gap-3 sm:gap-4 rounded-xl lg:rounded-2xl px-4 py-3 sm:px-5 sm:py-4 lg:py-5 border border-[#DADCE0]"
               style={`background:#FFFFFF; box-shadow: 0 1px 4px rgba(60,64,67,0.10); animation: fadeInUp 0.4s ease ${i * 0.15}s both;`}
             >
-              <span class="text-2xl lg:text-3xl">{em}</span>
-              <span class="text-base lg:text-xl xl:text-2xl font-medium" style="color:#5F6368;">{txt}</span>
+              <span class="text-xl sm:text-2xl lg:text-3xl">{em}</span>
+              <span class="text-sm sm:text-base lg:text-xl xl:text-2xl font-medium" style="color:#5F6368;">{txt}</span>
               <!-- Google Blue pulse dot -->
               <div
                 class="ml-auto w-5 h-5 rounded-full flex items-center justify-center shrink-0"
