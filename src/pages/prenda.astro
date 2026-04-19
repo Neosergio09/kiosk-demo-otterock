@@ -1,0 +1,332 @@
+---
+import "../styles/global.css";
+import { supabase } from '../lib/supabase';
+
+// ── Asset imports ──────
+import recurso1Url from "../assets/models/Recurso 1.svg?url";
+import recurso3Url from "../assets/models/Recurso 3.svg?url";
+import botonVolverUrl from "../assets/models/Botón Volver.svg?url";
+import { Image } from "astro:assets";
+import camisaBlancaImg from "../assets/models/CamisaBlanca.png";
+import camisaNegraImg from "../assets/models/CamisaNegra.png";
+import totebagCremaImg from "../assets/models/TotebagCrema.png";
+import totebagNegraImg from "../assets/models/TotebagNegra.png";
+
+let garments = [];
+try {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, description, image_url')
+    .limit(4);
+    
+  if (error) throw error;
+  garments = data || [];
+} catch (e) {
+  console.error("Supabase Error:", e);
+}
+
+// Fallback visual
+if (garments.length === 0) {
+  garments = [
+    { id: 'tshirt-black', name: 'Camiseta Negra', description: '100% algodón', localImg: camisaNegraImg },
+    { id: 'tshirt-white', name: 'Camiseta Blanca', description: '100% algodón', localImg: camisaBlancaImg },
+    { id: 'totebag-crema', name: 'Totebag Crema', description: '100% algodón', localImg: totebagCremaImg },
+    { id: 'totebag-black', name: 'Totebag Negra', description: '100% algodón', localImg: totebagNegraImg },
+  ];
+} else {
+  // Asignar imágenes locales a los productos que vengan de Supabase según su ID
+  garments = garments.map((g: any) => {
+    if(g.id === 'tshirt-black' || g.id === '1') g.localImg = camisaNegraImg;
+    if(g.id === 'tshirt-white' || g.id === '2') g.localImg = camisaBlancaImg;
+    if(g.id === 'totebag-crema' || g.id === '3') g.localImg = totebagCremaImg;
+    if(g.id === 'totebag-black' || g.id === '4') g.localImg = totebagNegraImg;
+    return g;
+  });
+}
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <title>Paso 1: Prenda — Google Cloud Day</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="welcome-body">
+    <!-- DECORATIVE CORNERS -->
+    <div class="corner corner-tr" aria-hidden="true">
+      <img src={recurso3Url} alt="" class="corner-img" />
+    </div>
+    <div class="corner corner-ml" aria-hidden="true">
+      <img src={recurso1Url} alt="" class="corner-img" />
+    </div>
+
+    <main class="welcome-card">
+      <div class="dot-row" aria-hidden="true">
+        <span class="dot" style="background:#4285F4; animation-delay: 0s;"></span>
+        <span class="dot" style="background:#EA4335; animation-delay: 0.1s;"></span>
+        <span class="dot" style="background:#FBBC04; animation-delay: 0.2s;"></span>
+        <span class="dot" style="background:#34A853; animation-delay: 0.3s;"></span>
+      </div>
+
+      <header class="hero-text">
+        <h1 class="greeting animate-slide-up" style="font-size:2.5rem;">Paso 1</h1>
+        <p class="subtitle animate-slide-up" style="animation-delay:.1s; font-size:1.5rem;">
+          ¿Qué prenda deseas llevar?
+        </p>
+      </header>
+
+      <!-- PRODUCT GRID -->
+      <section class="w-full max-w-2xl grid grid-cols-2 gap-4 md:gap-6 relative z-10 my-4 md:my-6">
+        {garments.map((g, i) => (
+          <button 
+            class="product-card group relative w-full h-[21rem] md:h-[25.2rem] bg-stone-50 rounded-3xl flex flex-col items-center justify-end pb-0 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border-2 border-transparent animate-slide-up"
+            data-id={g.id}
+            data-name={g.name}
+            style={`animation-delay: ${0.2 + (i * 0.1)}s;`}
+          >
+            <!-- Mockup / Imagen -->
+            <div class="flex-1 w-full overflow-hidden flex items-center justify-center p-4">
+              {g.localImg ? (
+                <Image src={g.localImg} alt={g.name} class="w-full h-full object-contain drop-shadow-md" />
+              ) : g.image_url ? (
+                <img src={g.image_url} alt={g.name} class="w-full h-full object-contain drop-shadow-md" />
+              ) : (
+                <div class="w-20 h-20 text-zinc-300 flex items-center justify-center group-hover:text-zinc-400 transition-colors">
+                   <svg viewBox="0 0 100 100" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" fill="currentColor" fill-opacity="0.1"/>
+                   </svg>
+                </div>
+              )}
+            </div>
+
+            <!-- Meta (Nombre y Descripción) -->
+            <!-- ✅ CAMBIO: mb-[5%] → mb-[8%] y pb-5 → pb-4 para dar aire al borde inferior -->
+            <div class="w-[85%] bg-white shadow-sm rounded-2xl pt-3 pb-4 px-3 flex flex-col items-center transition-colors group-hover:bg-blue-50 relative z-10 mb-[8%]">
+              <span class="text-blue-500 text-[13px] md:text-sm font-medium text-center leading-tight font-sans">{g.name}</span>
+              <span class="text-neutral-400 text-[10px] md:text-xs font-light tracking-wide font-sans mt-2">{g.description}</span>
+            </div>
+
+            <!-- Indicador de selección oculto -->
+            <div class="selection-ring absolute -inset-[2px] rounded-[calc(1.5rem+2px)] border-4 border-[#4285F4] opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+          </button>
+        ))}
+      </section>
+
+      <footer class="flex flex-col items-center gap-6 mt-4 w-full animate-slide-up" style="animation-delay:0.6s;">
+        <div class="flex flex-col gap-4 w-full items-center">
+          <!-- Botón Continuar (Deshabilitado por defecto) -->
+          <button 
+            id="btn-continuar"
+            disabled
+            class="cta-btn disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:transform-none disabled:hover:bg-[#4285f4]"
+            style="width: 100%; max-width: 400px;"
+          >
+            Continuar
+            <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+          </button>
+
+          <!-- Botón Volver -->
+          <a href="/" class="group flex items-center justify-center transition-transform hover:-translate-y-1 mt-2">
+            <img src={botonVolverUrl} alt="Volver" class="h-12 w-auto object-contain" />
+          </a>
+        </div> 
+      </footer>
+
+    </main>
+  </body>
+</html>
+
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  html {
+    background: #ffffff;
+  }
+  .welcome-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    font-family: "Google Sans", "Inter", sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+  .corner {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .corner-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .corner-tr {
+    top: 5%;
+    right: 5%;
+    width: 320px;
+    z-index: 15;
+  }
+  .corner-ml {
+    top: 35%;
+    left: 8%;
+    width: 120px;
+    z-index: 15;
+  }
+  .welcome-card {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1rem, 2vh, 1.5rem);
+    padding: 2rem 1.5rem;
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+  }
+  .dot-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dot {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    animation: dot-jump 1.4s infinite ease-in-out;
+    will-change: transform;
+  }
+  @keyframes dot-jump {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-12px); }
+  }
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .greeting {
+    font-weight: 500;
+    color: #5f6368;
+  }
+  .subtitle {
+    color: #80868b;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: #4285f4;
+    color: #ffffff;
+    border-radius: 9999px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 1.2rem 4.5rem;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+    transition: all 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    border: none;
+  }
+  .cta-btn:hover:not(:disabled) {
+    background: #3367d6;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 32px rgba(66, 133, 244, 0.5);
+  }
+  .cta-arrow {
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: transform 200ms ease;
+  }
+  .cta-btn:hover:not(:disabled) .cta-arrow {
+    transform: translateX(6px);
+  }
+  .event-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(66, 133, 244, 0.08);
+    border: 1px solid rgba(66, 133, 244, 0.25);
+    border-radius: 9999px;
+    padding: 0.5rem 1.25rem;
+    animation: pill-pulse 3s infinite ease-in-out;
+  }
+  @keyframes pill-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.03); opacity: 0.9; }
+  }
+  .event-label {
+    font-weight: 500;
+    color: #4285f4;
+    font-size: 0.9rem;
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.product-card');
+    const btnContinuar = document.getElementById('btn-continuar') as HTMLButtonElement | null;
+    let selectedProductId: string | null = null;
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => {
+          c.classList.remove('bg-blue-50'); 
+          c.querySelector('.selection-ring')?.classList.remove('opacity-100');
+        });
+
+        card.classList.add('bg-blue-50');
+        card.querySelector('.selection-ring')?.classList.add('opacity-100');
+        
+        selectedProductId = card.getAttribute('data-id');
+        
+        card.animate([
+          { transform: 'scale(0.95)', translateY: '0px' },
+          { transform: 'scale(1)', translateY: '-8px' }
+        ], { duration: 250, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)', fill: 'forwards' });
+
+        if (btnContinuar) {
+          btnContinuar.removeAttribute('disabled');
+        }
+      });
+    });
+
+    btnContinuar?.addEventListener('click', () => {
+      if(selectedProductId) {
+        sessionStorage.setItem('selectedGarmentId', selectedProductId);
+        window.location.href = `/talla?garmentId=${selectedProductId}`;
+      }
+    });
+  });
+</script>

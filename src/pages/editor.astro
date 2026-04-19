@@ -1,8 +1,6 @@
 ---
 import Layout          from '../layouts/Layout.astro';
-import GarmentSelector from '../components/GarmentSelector.astro';
 import ColorSelector   from '../components/ColorSelector.astro';
-import SizeSelector    from '../components/SizeSelector.astro';
 import PatchEditor     from '../components/PatchEditor.astro';
 import { actions }     from 'astro:actions';
 
@@ -13,7 +11,7 @@ const success     = result?.data?.success ?? false;
 const actionError = result?.error;
 ---
 
-<Layout title="Personaliza tu Prenda — Google Cloud Day" step={success ? 3 : 1}>
+<Layout title="Personaliza tu Prenda — Google Cloud Day" step={success ? 4 : 3}>
 
   {/* ═══════════════════════════════════════════════════════════════════
        SUCCESS SCREEN — Google Green (#34A853) palette
@@ -215,9 +213,9 @@ const actionError = result?.error;
 
           <!-- ── LEFT column: Controls ── -->
           <div class="flex flex-col gap-6 lg:gap-8 pb-4 lg:pb-8">
-            <GarmentSelector />
+            <input type="hidden" name="garmentType" id="garmentTypeInput" required />
+            <input type="hidden" name="size" id="sizeInput" required />
             <ColorSelector />
-            <SizeSelector />
 
             <!-- Submit CTA — Google Blue, Material Design -->
             <div class="pt-1 lg:pt-2">
@@ -265,6 +263,27 @@ const actionError = result?.error;
 
 <!-- ── Client scripts ──────────────────────────────────────────────────────── -->
 <script>
+  // ── Load Garment from previous step ─────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", () => {
+    const hiddenInput = document.getElementById("garmentTypeInput") as HTMLInputElement;
+    const urlParams = new URLSearchParams(window.location.search);
+    const garmentId = urlParams.get("garmentId") || sessionStorage.getItem("selectedGarmentId");
+    const sizeId = urlParams.get("size") || sessionStorage.getItem("selectedSizeId");
+    
+    if (garmentId && hiddenInput) {
+      hiddenInput.value = garmentId;
+    } else {
+      window.location.href = "/prenda";
+    }
+
+    const hiddenSizeInput = document.getElementById("sizeInput") as HTMLInputElement;
+    if (sizeId && hiddenSizeInput) {
+      hiddenSizeInput.value = sizeId;
+    } else if (garmentId) {
+      window.location.href = "/talla?garmentId=" + garmentId;
+    }
+  });
+
   // ── Submit: show overlay + spinner ───────────────────────────────────────
   const form              = document.getElementById('personalization-form') as HTMLFormElement | null;
   const btnLabel          = document.getElementById('btn-label');

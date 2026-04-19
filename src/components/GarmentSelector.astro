@@ -1,150 +1,108 @@
 ---
-interface GarmentOption {
-  id: string;
-  label: string;
-  description: string;
-  icon: string;
+import { supabase } from '../lib/supabase';
+
+let garments = [];
+try {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, name, description, image_url')
+    .limit(4);
+    
+  if (error) throw error;
+  garments = data || [];
+} catch (e) {
+  console.error("Supabase Error:", e);
 }
 
-const garments: GarmentOption[] = [
-  {
-    id: 'tshirt',
-    label: 'T-Shirt',
-    description: 'Algodón 100% premium',
-    icon: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z"
-        stroke="currentColor" stroke-width="3" stroke-linejoin="round" fill="currentColor" fill-opacity="0.08"/>
-    </svg>`
-  }
-];
+// Fallback visual
+if (garments.length === 0) {
+  garments = [
+    { id: 'tshirt-black', name: 'Camiseta Negra', description: '100% algodón' },
+    { id: 'tshirt-white', name: 'Camiseta Blanca', description: '100% algodón' },
+    { id: 'totebag-crema', name: 'Totebag Crema', description: '100% algodón' },
+    { id: 'totebag-black', name: 'Totebag Negra', description: '100% algodón' },
+  ];
+}
 ---
 
-<div class="flex flex-col gap-4 lg:gap-6">
-  <p class="text-lg lg:text-2xl font-medium px-1" style="color:#5F6368;">Selecciona tu prenda</p>
+<div class="flex flex-col gap-4 lg:gap-6 font-['Montserrat']">
+  <p class="text-neutral-400 text-3xl md:text-4xl font-medium px-1 flex flex-col gap-2">
+    Paso 1:
+    <span class="text-neutral-500 text-xl font-regular">¿Qué prenda deseas llevar?</span>
+  </p>
 
-  <!--
-    Mobile : 3-column icon grid
-    Totem  : vertical full-width cards
-  -->
   <div
     id="garment-selector"
     role="radiogroup"
     aria-label="Tipo de prenda"
-    class="garment-grid py-3"
+    class="grid grid-cols-2 gap-4 lg:gap-6 py-3"
   >
     {garments.map((g, i) => (
       <label
         for={`garment-${g.id}`}
-        class="garment-card glass glass-hover rounded-2xl lg:rounded-3xl cursor-pointer select-none animate-fadeInUp border border-[#DADCE0]"
+        class="product-card group relative w-full h-56 bg-stone-50 rounded-3xl flex flex-col items-center justify-end pb-3 transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg border-2 border-transparent cursor-pointer animate-fadeInUp"
         style={`animation-delay: ${i * 0.1}s`}
-        data-value={g.id}
       >
         <input
           type="radio"
           id={`garment-${g.id}`}
           name="garmentType"
           value={g.id}
-          class="sr-only"
+          class="sr-only garment-radio"
           required
         />
-
-        <!-- Mobile layout: icon + label stacked -->
-        <div class="mobile-card flex flex-col items-center gap-2 p-4 text-center">
-          <div class="garment-icon w-14 h-14 transition-colors duration-300" style="color:#80868B;" set:html={g.icon} />
-          <span class="garment-label text-sm font-bold leading-tight" style="color:#202124;">{g.label}</span>
-          <span class="text-xs leading-tight" style="color:#80868B;">{g.description}</span>
-          <!-- Mobile check dot -->
-          <div class="garment-check-dot w-4 h-4 rounded-full border-2 mt-1 transition-all duration-300" style="border-color:#DADCE0;"></div>
+        
+        <!-- Mockup / Imagen -->
+        <div class="flex-1 w-full flex items-center justify-center p-4">
+          {g.image_url ? (
+            <img src={g.image_url} alt={g.name} class="max-h-full object-contain drop-shadow-md" />
+          ) : (
+            <div class="w-20 h-20 text-zinc-300 flex items-center justify-center transition-colors group-hover:text-zinc-400">
+               <svg viewBox="0 0 100 100" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" fill="currentColor" fill-opacity="0.1"/>
+               </svg>
+            </div>
+          )}
         </div>
 
-        <!-- Totem/Desktop layout: horizontal row -->
-        <div class="desktop-card hidden items-center gap-8 px-8 py-0">
-          <div class="garment-icon w-20 h-20 lg:w-24 lg:h-24 shrink-0 text-zinc-400 transition-colors duration-300" set:html={g.icon} />
-          <div class="flex flex-col gap-1 flex-1">
-            <span class="garment-label text-2xl lg:text-3xl font-bold tracking-tight leading-none" style="color:#202124;">{g.label}</span>
-            <span class="text-base lg:text-xl" style="color:#80868B;">{g.description}</span>
-          </div>
-          <div class="garment-check w-9 h-9 lg:w-10 lg:h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 shrink-0" style="border-color:#DADCE0;">
-            <svg class="w-4 h-4 lg:w-5 lg:h-5 opacity-0 transition-opacity duration-200" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-            </svg>
-          </div>
+        <!-- Meta (Nombre y Descripción) -->
+        <div class="w-[90%] bg-white shadow-sm rounded-2xl py-2 px-2 flex flex-col items-center transition-colors group-hover:bg-blue-50 meta-box">
+          <span class="text-blue-500 text-xs md:text-sm font-medium text-center leading-tight">{g.name}</span>
+          <span class="text-neutral-400 text-[10px] md:text-xs font-light tracking-wide">{g.description}</span>
         </div>
+
+        <!-- Indicador de selección oculto -->
+        <div class="selection-ring absolute inset-0 rounded-3xl border-4 border-[#4285F4] opacity-0 transition-opacity duration-300 pointer-events-none"></div>
       </label>
     ))}
   </div>
 </div>
 
 <style>
-  /* ── Grid: 3 cols on mobile, 1 col (tall cards) on lg ── */
-  .garment-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
+  /* Selected interactions via CSS :has */
+  .product-card:has(input:checked) {
+    transform: scale(1.02);
   }
-
-  @media (min-width: 1024px) {
-    .garment-grid {
-      grid-template-columns: 1fr;
-      gap: 1.25rem;
-    }
+  .product-card:has(input:checked) .meta-box {
+    background-color: #eff6ff;
   }
-
-  /* ── Card base ── */
-  .garment-card {
-    /* border is set via class above; override any glass border to border-[#DADCE0] */
-    transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 180ms ease;
-    min-height: 100px;
-  }
-
-  @media (min-width: 1024px) {
-    .garment-card {
-      min-height: 110px;
-    }
-    .garment-card:hover {
-      transform: scale(1.015);
-      border-color: #C5C8CC;
-    }
-    /* Hide mobile layout, show desktop row */
-    .garment-card .mobile-card  { display: none; }
-    .garment-card .desktop-card { display: flex; }
-  }
-
-  /* ── Selected state — Google Blue tint ── */
-  .garment-card[data-selected="true"] {
-    background: #E8F0FE;
-    border-color: #4285F4;
-    box-shadow: 0 0 0 3px rgba(66,133,244,0.15);
-  }
-
-  .garment-card[data-selected="true"] .garment-icon {
-    color: #4285F4;
-  }
-
-  /* Desktop checkmark ring — Google Blue */
-  .garment-card[data-selected="true"] .garment-check {
-    background: #4285F4;
-    border-color: transparent;
-    box-shadow: 0 0 0 3px rgba(66,133,244,0.25);
-  }
-  .garment-card[data-selected="true"] .garment-check svg { opacity: 1; color: white; }
-
-  /* Mobile check dot — Google Blue */
-  .garment-card[data-selected="true"] .garment-check-dot {
-    background: #4285F4;
-    border-color: transparent;
-    box-shadow: 0 0 0 3px rgba(66,133,244,0.20);
+  .product-card:has(input:checked) .selection-ring {
+    opacity: 1;
   }
 </style>
 
 <script>
-  const cards = document.querySelectorAll<HTMLElement>('.garment-card');
-  cards.forEach((card) => {
-    card.addEventListener('click', () => {
-      cards.forEach(c => c.removeAttribute('data-selected'));
-      card.setAttribute('data-selected', 'true');
-      const radio = card.querySelector<HTMLInputElement>('input[type="radio"]');
-      if (radio) radio.checked = true;
+  // Add quick animation pop on selection change independent of the CSS :has
+  const radios = document.querySelectorAll('.garment-radio');
+  radios.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const parent = (e.target as HTMLElement).closest('.product-card');
+      if(parent) {
+        parent.animate([
+          { transform: 'scale(0.95)' },
+          { transform: 'scale(1.02)' }
+        ], { duration: 250, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)' });
+      }
     });
   });
 </script>
