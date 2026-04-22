@@ -1,0 +1,247 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PatchEditor from "../../components/PatchEditor.astro";
+
+// Asset imports
+import recurso1Url from "../../assets/models/Recurso 1.svg?url";
+import recurso3Url from "../../assets/models/Recurso 3.svg?url";
+
+const { id } = Astro.params;
+
+// Reconstruct ID for the designer
+if (!id) return Astro.redirect("/prenda");
+---
+
+<Layout title="Vista Previa — Google Cloud Day">
+  <div class="welcome-body-wrapper">
+    <!-- Corner Assets — "Step 1" Aesthetic -->
+    <div class="corner corner-tr" aria-hidden="true">
+      <img src={recurso3Url} alt="" class="corner-img" />
+    </div>
+
+    <div class="corner corner-ml" aria-hidden="true">
+      <img src={recurso1Url} alt="" class="corner-img" />
+    </div>
+
+    <main class="welcome-card preview-card">
+      <!-- Jumping Dots Header -->
+      <div class="dot-row" aria-hidden="true">
+        <span class="dot" style="background:#4285F4; animation-delay: 0s;"></span>
+        <span class="dot" style="background:#EA4335; animation-delay: 0.1s;"></span>
+        <span class="dot" style="background:#FBBC04; animation-delay: 0.2s;"></span>
+        <span class="dot" style="background:#34A853; animation-delay: 0.3s;" ></span>
+      </div>
+
+      <!-- Hero Header -->
+      <header class="text-center mb-4 lg:mb-8 animate-slide-up">
+        <h1 class="greeting">¡Se ve increíble!</h1>
+        <p class="subtitle mt-2">
+          Revisa tu diseño antes de enviarlo a impresión.
+        </p>
+      </header>
+
+      <!-- 3D Cinematic Preview -->
+      <section class="w-full max-w-4xl mx-auto animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="preview-viewer-container rounded-4xl overflow-hidden border border-[#DADCE0]">
+          <PatchEditor isPreview={true} />
+        </div>
+      </section>
+
+      <!-- Navigation Actions -->
+      <footer class="flex flex-col sm:flex-row items-center gap-4 lg:gap-6 mt-6 lg:mt-12 w-full max-w-2xl animate-slide-up" style="animation-delay: 0.4s;">
+        <a 
+          href="/care-instructions" 
+          class="confirm-btn flex-1"
+        >
+          Confirmar e Imprimir 👕
+        </a>
+        
+        <a 
+          href={`/customize/${id}`} 
+          class="back-btn"
+        >
+          Volver a editar
+        </a>
+      </footer>
+
+      <!-- Bottom Event Badge -->
+      <div class="mt-8 animate-slide-up" style="animation-delay: 0.6s;">
+         <div class="event-pill">
+           <span class="event-label">Digital Craftsmanship</span>
+           <span class="event-sep" aria-hidden="true">·</span>
+           <span class="event-date">Google Cloud Day</span>
+         </div>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  /* 
+     Copying "Step 1" (index.astro) styles to ensure identical aesthetic 
+     as requested while keeping the page isolated and safe.
+  */
+  
+  .welcome-body-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent; /* Layout already has white bg */
+    font-family: "Google Sans", "Inter", sans-serif;
+    position: relative;
+    padding-top: 2rem;
+  }
+
+  .corner {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .corner-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .corner-tr {
+    top: 5%;
+    right: 5%;
+    width: clamp(180px, 20vw, 320px);
+  }
+  .corner-ml {
+    top: 40%;
+    left: 4%;
+    width: clamp(80px, 10vw, 120px);
+  }
+
+  .welcome-card {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1rem, 3vh, 2rem);
+    padding: 2rem 1.5rem;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Jumping Dots */
+  .dot-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .dot {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    animation: dot-jump 1.4s infinite ease-in-out;
+  }
+  @keyframes dot-jump {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+  }
+
+  .greeting {
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 500;
+    color: #202124;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    color: #5F6368;
+    line-height: 1.4;
+  }
+
+  .preview-viewer-container {
+    background: #F8F9FA;
+    box-shadow: 
+      0 1px 3px rgba(60,64,67,0.12), 
+      0 8px 24px rgba(60,64,67,0.1);
+  }
+
+  /* Navigation Buttons */
+  .confirm-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #4285F4;
+    color: #FFFFFF;
+    border-radius: 9999px;
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    font-weight: 700;
+    padding: 1.25rem 2.5rem;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(66, 133, 244, 0.35);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%;
+  }
+  .confirm-btn:hover {
+    background: #3367D6;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.45);
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: #5F6368;
+    border: 2px solid #DADCE0;
+    border-radius: 9999px;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-weight: 600;
+    padding: 1.1rem 2.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  .back-btn:hover {
+    background: #F8F9FA;
+    border-color: #BDC1C6;
+    color: #202124;
+    transform: translateY(-2px);
+  }
+
+  /* Event Pill */
+  .event-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(66, 133, 244, 0.05);
+    border: 1px solid rgba(66, 133, 244, 0.2);
+    border-radius: 9999px;
+    padding: 0.5rem 1.25rem;
+  }
+  .event-label {
+    font-weight: 700;
+    color: #4285F4;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .event-sep { color: #BDC1C6; }
+  .event-date { color: #5F6368; font-size: 0.85rem; }
+
+  /* Animations */
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) both;
+  }
+
+  @media (max-width: 639px) {
+    .welcome-card { padding: 1rem; }
+    .greeting { font-size: 2rem; }
+    .confirm-btn, .back-btn { padding: 1rem 1.5rem; }
+  }
+</style>

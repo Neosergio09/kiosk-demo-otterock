@@ -1,176 +1,22 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import PatchEditor from "../components/PatchEditor.astro";
+import Layout from "../../layouts/Layout.astro";
+import PatchEditor from "../../components/PatchEditor.astro";
 import { actions } from "astro:actions";
+
+const { id } = Astro.params;
+
+// Redirect if id is missing (shouldn't happen with dynamic route)
+if (!id) return Astro.redirect("/prenda");
 
 // ── POST handler ──────────────────────────────────────────────────────────────
 const result = await Astro.getActionResult(actions.createPersonalizedOrder);
 
-const success = result?.data?.success ?? false;
+if (result?.data?.success) return Astro.redirect('/care-instructions');
+
 const actionError = result?.error;
 ---
 
-<Layout title="Personaliza tu Prenda — Google Cloud Day" step={success ? 4 : 3}>
-  {
-    /* ═══════════════════════════════════════════════════════════════════
-       SUCCESS SCREEN — Google Green (#34A853) palette
-  ═══════════════════════════════════════════════════════════════════ */
-  }
-  {
-    success && result?.data && (
-      <div
-        id="success-screen"
-        class="relative flex-1 flex flex-col items-center justify-start px-5 sm:px-10 lg:px-16 pt-10 pb-16 animate-fadeInUp"
-      >
-        <div
-          class="relative flex items-center justify-center mt-6 mb-8 animate-fadeInUp"
-          style="animation-delay:0s"
-        >
-          <div
-            class="absolute rounded-full"
-            style="inset:-16%; background: rgba(52,168,83,0.10); border-radius: 50%;"
-          />
-          <div
-            class="w-36 h-36 lg:w-56 lg:h-56 rounded-full flex items-center justify-center"
-            style="background:#34A853; box-shadow: 0 4px 24px rgba(52,168,83,0.40), 0 0 0 6px rgba(52,168,83,0.15);"
-          >
-            <svg
-              class="w-16 h-16 lg:w-28 lg:h-28 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2.5"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-        </div>
-
-        <div
-          class="text-center mb-6 lg:mb-8 animate-fadeInUp"
-          style="animation-delay:.1s"
-        >
-          <h1
-            class="text-4xl sm:text-5xl lg:text-8xl font-black leading-tight mb-3"
-            style="color:#34A853;"
-          >
-            ¡Pedido Listo!
-          </h1>
-          <p
-            class="text-lg sm:text-xl lg:text-3xl font-medium"
-            style="color:#5F6368;"
-          >
-            Tu diseño ha sido enviado exitosamente.
-          </p>
-        </div>
-
-        <div
-          class="w-full rounded-3xl lg:rounded-4xl p-6 lg:p-10 mb-8 animate-fadeInUp border border-[#DADCE0]"
-          style="max-width:700px; animation-delay:.2s; background:#FFFFFF; box-shadow: 0 1px 3px rgba(60,64,67,0.12), 0 4px 16px rgba(60,64,67,0.08);"
-        >
-          <p
-            class="text-xs lg:text-sm font-semibold uppercase tracking-widest mb-5"
-            style="color:#80868B;"
-          >
-            Resumen del Pedido
-          </p>
-
-          <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-              class="rounded-2xl p-3 sm:p-4 lg:p-6 flex flex-col gap-1 sm:gap-2 border border-[#DADCE0]"
-              style="background:#F8F9FA;"
-            >
-              <span class="text-xl sm:text-2xl lg:text-4xl">🎨</span>
-              <span
-                class="text-[10px] sm:text-xs lg:text-sm uppercase tracking-widest font-semibold"
-                style="color:#80868B;"
-              >
-                Color
-              </span>
-              <span
-                class="text-base sm:text-lg lg:text-2xl font-bold capitalize"
-                style="color:#202124;"
-              >
-                {result.data.order.colorLabel}
-              </span>
-            </div>
-            <div
-              class="rounded-2xl p-3 sm:p-4 lg:p-6 flex flex-col gap-1 sm:gap-2 border border-[#DADCE0]"
-              style="background:#F8F9FA;"
-            >
-              <span class="text-xl sm:text-2xl lg:text-4xl">📏</span>
-              <span
-                class="text-[10px] sm:text-xs lg:text-sm uppercase tracking-widest font-semibold"
-                style="color:#80868B;"
-              >
-                Talla
-              </span>
-              <span
-                class="text-base sm:text-lg lg:text-2xl font-bold capitalize"
-                style="color:#202124;"
-              >
-                {result.data.order.size}
-              </span>
-            </div>
-            <div
-              class="rounded-2xl p-3 sm:p-4 lg:p-6 flex flex-col gap-1 sm:gap-2 border border-[#DADCE0]"
-              style="background:#F8F9FA;"
-            >
-              <span class="text-xl sm:text-2xl lg:text-4xl">✨</span>
-              <span
-                class="text-[10px] sm:text-xs lg:text-sm uppercase tracking-widest font-semibold"
-                style="color:#80868B;"
-              >
-                Parches
-              </span>
-              <span
-                class="text-base sm:text-lg lg:text-2xl font-bold capitalize"
-                style="color:#202124;"
-              >
-                {result.data.order.patchesCount}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <p
-          class="text-base lg:text-xl text-center animate-fadeInUp"
-          style="max-width:600px; animation-delay:.3s; color:#5F6368;"
-        >
-          ¡Tu personalización ha sido enviada con éxito! ✨
-        </p>
-
-        <button
-          id="reset-btn"
-          type="button"
-          class="animate-fadeInUp mt-8"
-          style="max-width:700px; width:100%; animation-delay:.45s"
-        >
-          <span class="new-order-btn">
-            <svg
-              class="w-6 h-6 lg:w-7 lg:h-7 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2.2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-            CREAR OTRO PEDIDO 👕
-          </span>
-        </button>
-      </div>
-    )
-  }
-
+<Layout title="Personaliza tu Prenda — Google Cloud Day" step={3}>
   {
     /* ═══════════════════════════════════════════════════════════════════
        ERROR BANNER — Material style: white card, red left border
@@ -215,8 +61,9 @@ const actionError = result?.error;
   ═══════════════════════════════════════════════════════════════════ */
   }
   {
-    !success && (
-      <form
+    /* Form always renders — on success the server redirects before reaching here */
+  }
+  <form
         id="personalization-form"
         method="POST"
         enctype="multipart/form-data"
@@ -330,9 +177,11 @@ const actionError = result?.error;
             type="hidden"
             name="garmentType"
             id="garmentTypeInput"
+            value={id}
             required
           />
           <input type="hidden" name="size" id="sizeInput" required />
+          <input type="hidden" name="color" value="Blanco" />
 
           <div
             class="w-full rounded-3xl border border-[#DADCE0] overflow-hidden"
@@ -393,8 +242,6 @@ const actionError = result?.error;
           </div>
         </div>
       </form>
-    )
-  }
 </Layout>
 
 <script>
@@ -404,13 +251,13 @@ const actionError = result?.error;
       "garmentTypeInput",
     ) as HTMLInputElement;
     const urlParams = new URLSearchParams(window.location.search);
-    const garmentId =
-      urlParams.get("garmentId") || sessionStorage.getItem("selectedGarmentId");
-    const sizeId =
-      urlParams.get("size") || sessionStorage.getItem("selectedSizeId");
 
-    if (garmentId && hiddenInput) {
-      hiddenInput.value = garmentId;
+    // We already have 'id' injected from the server into the hidden input value
+    const garmentId = hiddenInput.value || sessionStorage.getItem("selectedGarmentId");
+    const sizeId = urlParams.get("size") || sessionStorage.getItem("selectedSizeId");
+
+    if (garmentId) {
+      if (!hiddenInput.value) hiddenInput.value = garmentId;
     } else {
       window.location.href = "/prenda";
     }
@@ -447,6 +294,9 @@ const actionError = result?.error;
 
   // ── Reset ──
   document.getElementById("reset-btn")?.addEventListener("click", () => {
+    sessionStorage.removeItem("currentCustomization");
+    sessionStorage.removeItem("selectedGarmentId");
+    sessionStorage.removeItem("selectedSizeId");
     const screen = document.getElementById("success-screen");
     if (screen) {
       screen.style.transition = "opacity 0.4s ease";

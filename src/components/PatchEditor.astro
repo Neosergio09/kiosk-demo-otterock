@@ -1,6 +1,11 @@
 ---
 import ShirtViewer3D from './ShirtViewer3D.astro';
 
+interface Props {
+  isPreview?: boolean;
+}
+const { isPreview = false } = Astro.props;
+
 const patches = [
   { id: 'cloud',   icon: '☁️', label: 'Cloud'   },
   { id: 'diamond', icon: '💎', label: 'Diamond' },
@@ -14,10 +19,20 @@ const patches = [
   <input type="hidden" name="customization_data" id="customization-data" value='{"patches":[],"text":""}' />
 
   <!-- 3D GARMENT VIEWER -->
-  <ShirtViewer3D />
+  <div class="relative">
+    <ShirtViewer3D isPreview={isPreview} />
+    
+    {isPreview && (
+      <div 
+        class="absolute inset-0 z-[100] cursor-default" 
+        style="background: transparent;"
+        aria-hidden="true"
+      ></div>
+    )}
+  </div>
 
-  <!-- PATCH INVENTORY -->
-  <div class="flex flex-col gap-3">
+  {!isPreview && (
+    <div class="flex flex-col gap-3">
     <div class="flex justify-between items-center px-1">
       <p class="text-sm lg:text-base font-semibold" style="color:#202124;">Parches <span style="color:#80868B;font-weight:400;">(Max 4)</span></p>
       <span id="patch-count"
@@ -63,6 +78,7 @@ const patches = [
       />
     </div>
   </div>
+  )}
 </div>
 
 <style>
@@ -126,7 +142,47 @@ const patches = [
   /* ── Canvas drop zone highlight ── */
   :global(#design-3d-overlay.drag-over) {
     border-color: rgba(66,133,244,0.7) !important;
-    background: rgba(66,133,244,0.04);
+    background: rgba(66,133,244,0.06);
+  }
+
+  /* ── Text printed on shirt ── */
+  :global(.canvas-text) {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Google Sans', 'Inter', sans-serif;
+    font-size: clamp(0.45rem, 1.8vw, 0.85rem);
+    font-weight: 800;
+    color: #1a1a2e;
+    white-space: nowrap;
+    max-width: 94%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: none;
+    text-shadow: 0 0 8px rgba(255,255,255,0.8), 0 1px 0 rgba(255,255,255,0.5);
+  }
+
+  /* ── Empty state hint inside drop zone ── */
+  :global(.canvas-empty-hint) {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    pointer-events: none;
+    color: #4285F4;
+    opacity: 0.6;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(255,255,255,0.9);
   }
 
   /* ── Custom text input ── */
@@ -148,232 +204,218 @@ const patches = [
   }
 </style>
 
-<script>
-  // ─────────────────────────────────────────────────────────
-  //  PATCH EDITOR — Pointer Events Drag & Drop Engine
-  //  Works on: mouse, touch, stylus, touch monitors
-  // ─────────────────────────────────────────────────────────
+<script is:inline define:vars={{ isPreview }}>
+(function () {
+  // ── STATE
+  var patchesState = [];
+  var currentSide  = 'front';
 
-  // ── STATE ─────────────────────────────────────────────────
-  type PatchEntry = {
-    id: string;
-    type: string;
-    icon: string;
-    x: number;
-    y: number;
-    side: string;
-  };
+  // ── DOM REFS (resolved after HTML is parsed)
+  var textInput    = document.getElementById('custom-text-input');
+  var hiddenInput  = document.getElementById('customization-data');
+  var patchCount   = document.getElementById('patch-count');
+  var canvas       = document.getElementById('design-3d-overlay');
+  var inventoryItems = Array.from(document.querySelectorAll('.patch-item'));
 
-  let patchesState: PatchEntry[] = [];
-  let currentSide = 'front';
-
-  // ── DOM REFS ───────────────────────────────────────────────
-  const textInput   = document.getElementById('custom-text-input')  as HTMLInputElement;
-  const hiddenInput = document.getElementById('customization-data') as HTMLInputElement;
-  const patchCount  = document.getElementById('patch-count')!;
-  const canvas      = document.getElementById('design-3d-overlay') as HTMLElement;
-  const inventoryItems = Array.from(document.querySelectorAll<HTMLElement>('.patch-item'));
-
-  // ── STATE SYNC ─────────────────────────────────────────────
+  // ── STATE SYNC
   function updateState() {
-    hiddenInput.value = JSON.stringify({
-      patches: patchesState,
-      text: textInput.value,
-    });
-    patchCount.textContent = `${patchesState.length} / 4`;
+    var data = { patches: patchesState, text: textInput ? textInput.value : '' };
+    if (hiddenInput) hiddenInput.value = JSON.stringify(data);
+    sessionStorage.setItem('currentCustomization', JSON.stringify(data));
+    if (patchCount) patchCount.textContent = patchesState.length + ' / 4';
     renderCanvas();
   }
 
   function renderCanvas() {
+    if (!canvas) return;
     canvas.innerHTML = '';
-    patchesState
-      .filter(p => p.side === currentSide)
-      .forEach(p => {
-        const el = document.createElement('div');
-        el.className = 'canvas-patch';
-        el.textContent = p.icon;
-        el.style.left = `${p.x}%`;
-        el.style.top  = `${p.y}%`;
-        canvas.appendChild(el);
-      });
+    var patchesForSide = patchesState.filter(function (p) { return p.side === currentSide; });
+    var text = textInput ? textInput.value.trim() : '';
+
+    if (patchesForSide.length === 0 && !text) {
+      var hint = document.createElement('div');
+      hint.className = 'canvas-empty-hint';
+      hint.innerHTML =
+        '<svg style="width:1.3rem;height:1.3rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m8-8H4"/></svg>' +
+        '<span>ARRASTRA AQUÍ</span>';
+      canvas.appendChild(hint);
+      return;
+    }
+
+    patchesForSide.forEach(function (p) {
+      var el = document.createElement('div');
+      el.className   = 'canvas-patch';
+      el.textContent = p.icon;
+      el.style.left  = p.x + '%';
+      el.style.top   = p.y + '%';
+      canvas.appendChild(el);
+    });
+
+    if (text) {
+      var textEl = document.createElement('div');
+      textEl.className   = 'canvas-text';
+      textEl.textContent = text;
+      canvas.appendChild(textEl);
+    }
   }
 
-  // Side change from ShirtViewer3D
-  window.addEventListener('sideChanged', (e: any) => {
+  // ── INIT (handles both "DOM ready" and "DOM already ready" cases)
+  function init() {
+    var saved = sessionStorage.getItem('currentCustomization');
+    if (saved) {
+      try {
+        var data = JSON.parse(saved);
+        patchesState = data.patches || [];
+        if (textInput && data.text) textInput.value = data.text;
+      } catch (e) {}
+    }
+    renderCanvas();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // ── LIVE EVENTS
+  if (textInput) {
+    textInput.addEventListener('input', function () { updateState(); });
+  }
+
+  window.addEventListener('sideChanged', function (e) {
     currentSide = e.detail.side;
     renderCanvas();
   });
 
-  textInput.addEventListener('input', () => updateState());
+  // ── DRAG ENGINE (skip in preview mode)
+  if (!isPreview) {
+    var session = null;
 
-  // ─────────────────────────────────────────────────────────
-  //  POINTER EVENTS DRAG ENGINE
-  // ─────────────────────────────────────────────────────────
-
-  /**
-   * We build a "ghost" clone that follows the pointer.
-   * The actual inventory item stays in place but dims.
-   * On pointerup over the canvas we commit the patch.
-   *
-   * Key design decisions:
-   *  - setPointerCapture() → prevents "stuck" bug if pointer
-   *    leaves the element during fast movement.
-   *  - requestAnimationFrame throttle → 60fps, no jank.
-   *  - touch-action:none on items → browser won't scroll.
-   */
-
-  interface DragSession {
-    item: HTMLElement;
-    ghost: HTMLElement;
-    type: string;
-    icon: string;
-    // Last known pointer position (updated every pointermove)
-    px: number;
-    py: number;
-    // rAF handle
-    rafId: number | null;
-    // Whether a rAF is scheduled
-    rafPending: boolean;
-  }
-
-  let session: DragSession | null = null;
-
-  function createGhost(icon: string): HTMLElement {
-    const g = document.createElement('div');
-    g.className = 'patch-ghost';
-    g.textContent = icon;
-    document.body.appendChild(g);
-    return g;
-  }
-
-  function positionGhost(ghost: HTMLElement, x: number, y: number) {
-    ghost.style.left = `${x}px`;
-    ghost.style.top  = `${y}px`;
-  }
-
-  function cleanupSession() {
-    if (!session) return;
-    session.ghost.remove();
-    session.item.classList.remove('is-dragging');
-    canvas.classList.remove('drag-over');
-    if (session.rafId !== null) cancelAnimationFrame(session.rafId);
-    session = null;
-  }
-
-  function onPointerMove(e: PointerEvent) {
-    if (!session) return;
-    // Update latest coords
-    session.px = e.clientX;
-    session.py = e.clientY;
-
-    // Highlight canvas if pointer is over it
-    const underEl = document.elementFromPoint(e.clientX, e.clientY);
-    if (underEl && canvas.contains(underEl)) {
-      canvas.classList.add('drag-over');
-    } else {
-      canvas.classList.remove('drag-over');
+    function createGhost(icon) {
+      var g = document.createElement('div');
+      g.className   = 'patch-ghost';
+      g.textContent = icon;
+      document.body.appendChild(g);
+      return g;
     }
 
-    // Throttle position updates to rAF
-    if (!session.rafPending) {
-      session.rafPending = true;
-      session.rafId = requestAnimationFrame(() => {
-        if (session) {
-          positionGhost(session.ghost, session.px, session.py);
-          session.rafPending = false;
+    function positionGhost(ghost, x, y) {
+      ghost.style.left = x + 'px';
+      ghost.style.top  = y + 'px';
+    }
+
+    function cleanupSession() {
+      if (!session) return;
+      session.ghost.remove();
+      session.item.classList.remove('is-dragging');
+      if (canvas) canvas.classList.remove('drag-over');
+      if (session.rafId !== null) cancelAnimationFrame(session.rafId);
+      session = null;
+    }
+
+    function onPointerMove(e) {
+      if (!session) return;
+      session.px = e.clientX;
+      session.py = e.clientY;
+
+      if (canvas) {
+        var under = document.elementFromPoint(e.clientX, e.clientY);
+        if (under && canvas.contains(under)) {
+          canvas.classList.add('drag-over');
+        } else {
+          canvas.classList.remove('drag-over');
         }
-      });
-    }
-  }
-
-  function onPointerUp(e: PointerEvent) {
-    if (!session) return;
-
-    // Check if pointer is released over the canvas drop zone
-    const rect = canvas.getBoundingClientRect();
-    const overCanvas =
-      e.clientX >= rect.left &&
-      e.clientX <= rect.right &&
-      e.clientY >= rect.top  &&
-      e.clientY <= rect.bottom;
-
-    if (overCanvas && patchesState.length < 4) {
-      // Convert absolute coords to canvas-relative percentage
-      let x = ((e.clientX - rect.left)  / rect.width)  * 100;
-      let y = ((e.clientY - rect.top)   / rect.height) * 100;
-      x = Math.max(2, Math.min(98, x));
-      y = Math.max(2, Math.min(98, y));
-
-      patchesState.push({
-        id:   Date.now().toString(),
-        type: session.type,
-        icon: session.icon,
-        x:    Math.round(x * 10) / 10,
-        y:    Math.round(y * 10) / 10,
-        side: currentSide,
-      });
-      updateState();
-    } else if (patchesState.length >= 4 && overCanvas) {
-      // Subtle shake hint: patch limit reached
-      canvas.animate(
-        [{ transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }],
-        { duration: 250, iterations: 2, easing: 'ease-in-out' }
-      );
-    }
-
-    cleanupSession();
-
-    // Remove global listeners
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup',   onPointerUp);
-    document.removeEventListener('pointercancel', onPointerCancel);
-  }
-
-  function onPointerCancel() {
-    cleanupSession();
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup',   onPointerUp);
-    document.removeEventListener('pointercancel', onPointerCancel);
-  }
-
-  // ── Attach pointerdown to every inventory item ────────────
-  inventoryItems.forEach(item => {
-    item.addEventListener('pointerdown', (e: PointerEvent) => {
-      // Ignore right-clicks / multi-touch secondary contacts
-      if (e.button !== 0 && e.pointerType === 'mouse') return;
-      if (patchesState.length >= 4) {
-        // Gentle shake feedback instead of alert
-        item.animate(
-          [{ transform: 'scale(1)' }, { transform: 'scale(0.88)' }, { transform: 'scale(1)' }],
-          { duration: 300, easing: 'ease-in-out' }
-        );
-        return;
       }
 
-      e.preventDefault(); // stop text selection / scroll
+      if (!session.rafPending) {
+        session.rafPending = true;
+        session.rafId = requestAnimationFrame(function () {
+          if (session) {
+            positionGhost(session.ghost, session.px, session.py);
+            session.rafPending = false;
+          }
+        });
+      }
+    }
 
-      const icon = item.getAttribute('data-icon') ?? '?';
-      const type = item.getAttribute('data-type') ?? '';
+    function onPointerUp(e) {
+      if (!session) return;
 
-      // Capture pointer on the item so pointermove fires even
-      // if pointer leaves the element — prevents "stuck" bug
-      item.setPointerCapture(e.pointerId);
+      if (canvas) {
+        var rect = canvas.getBoundingClientRect();
+        var over =
+          e.clientX >= rect.left && e.clientX <= rect.right &&
+          e.clientY >= rect.top  && e.clientY <= rect.bottom;
 
-      const ghost = createGhost(icon);
-      positionGhost(ghost, e.clientX, e.clientY);
-      item.classList.add('is-dragging');
+        if (over && patchesState.length < 4) {
+          var x = ((e.clientX - rect.left) / rect.width)  * 100;
+          var y = ((e.clientY - rect.top)  / rect.height) * 100;
+          x = Math.max(2, Math.min(98, x));
+          y = Math.max(2, Math.min(98, y));
+          patchesState.push({
+            id:   Date.now().toString(),
+            type: session.type,
+            icon: session.icon,
+            x:    Math.round(x * 10) / 10,
+            y:    Math.round(y * 10) / 10,
+            side: currentSide,
+          });
+          updateState();
+        } else if (patchesState.length >= 4 && over) {
+          canvas.animate(
+            [{ transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }],
+            { duration: 250, iterations: 2, easing: 'ease-in-out' }
+          );
+        }
+      }
 
-      session = {
-        item, ghost, type, icon,
-        px: e.clientX, py: e.clientY,
-        rafId: null, rafPending: false,
-      };
+      cleanupSession();
+      document.removeEventListener('pointermove',   onPointerMove);
+      document.removeEventListener('pointerup',     onPointerUp);
+      document.removeEventListener('pointercancel', onPointerCancel);
+    }
 
-      // Global listeners — capture phase ensures we get the event
-      // even if pointer has left the item
-      document.addEventListener('pointermove',   onPointerMove,   { passive: true });
-      document.addEventListener('pointerup',     onPointerUp);
-      document.addEventListener('pointercancel', onPointerCancel);
+    function onPointerCancel() {
+      cleanupSession();
+      document.removeEventListener('pointermove',   onPointerMove);
+      document.removeEventListener('pointerup',     onPointerUp);
+      document.removeEventListener('pointercancel', onPointerCancel);
+    }
+
+    inventoryItems.forEach(function (item) {
+      item.addEventListener('pointerdown', function (e) {
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+        if (patchesState.length >= 4) {
+          item.animate(
+            [{ transform: 'scale(1)' }, { transform: 'scale(0.88)' }, { transform: 'scale(1)' }],
+            { duration: 300, easing: 'ease-in-out' }
+          );
+          return;
+        }
+
+        e.preventDefault();
+
+        var icon = item.getAttribute('data-icon') || '?';
+        var type = item.getAttribute('data-type') || '';
+
+        item.setPointerCapture(e.pointerId);
+
+        var ghost = createGhost(icon);
+        positionGhost(ghost, e.clientX, e.clientY);
+        item.classList.add('is-dragging');
+
+        session = {
+          item: item, ghost: ghost, type: type, icon: icon,
+          px: e.clientX, py: e.clientY,
+          rafId: null, rafPending: false,
+        };
+
+        document.addEventListener('pointermove',   onPointerMove,   { passive: true });
+        document.addEventListener('pointerup',     onPointerUp);
+        document.addEventListener('pointercancel', onPointerCancel);
+      });
     });
-  });
+  }
+})();
 </script>

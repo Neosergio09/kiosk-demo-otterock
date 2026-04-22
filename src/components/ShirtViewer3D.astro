@@ -1,9 +1,11 @@
 ---
 /**
  * ShirtViewer3D — Interactive 3D garment configurator
- * * AJUSTE: Solo se modificó el espaciado y tamaño del texto del header.
- * La lógica de JS y CSS del visor permanece intacta.
  */
+interface Props {
+  isPreview?: boolean;
+}
+const { isPreview = false } = Astro.props;
 ---
 
 <input type="hidden" id="placement-input" name="placement" value="front" />
@@ -20,7 +22,7 @@
         Configura tu prenda
       </p>
       <p class="text-[11px] lg:text-base mt-1" style="color:#5F6368;">
-        Rota el modelo · elige ubicación del diseño
+        Selecciona la cara · arrastra los parches al área azul
       </p>
     </div>
     <span
@@ -56,14 +58,11 @@
     <model-viewer
       id="shirt-model"
       src="/assets/models/Camisa.glb"
-      alt="Vista 3D interactiva de la prenda"
-      camera-controls
-      touch-action="pan-y"
+      alt="Vista 3D de la prenda"
       camera-orbit="0deg 75deg 105%"
-      min-camera-orbit="auto 30deg 80%"
-      max-camera-orbit="auto 110deg 140%"
       field-of-view="28deg"
       interpolation-decay="200"
+      interaction-prompt="none"
       environment-image="neutral"
       shadow-intensity="1"
       shadow-softness="0.8"
@@ -73,6 +72,7 @@
         height: 100%;
         display: block;
         background: transparent;
+        pointer-events: none;
         --poster-color: transparent;
         --progress-bar-color: #4285F4;
         --progress-mask: transparent;
@@ -151,15 +151,15 @@
       id="design-3d-overlay"
       class="absolute"
       style="
-        top: 38%;
+        top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 35%;
-        aspect-ratio: 1;
+        width: 44%;
+        height: 58%;
         border: 2px dashed transparent;
-        border-radius: 4px;
+        border-radius: 8px;
         overflow: hidden;
-        transition: top 400ms cubic-bezier(0.4,0,0.2,1), border-color 200ms ease;
+        transition: top 400ms cubic-bezier(0.4,0,0.2,1), width 400ms cubic-bezier(0.4,0,0.2,1), height 400ms cubic-bezier(0.4,0,0.2,1), border-color 200ms ease, background 200ms ease;
         z-index: 5;
       "
     >
@@ -176,7 +176,9 @@
         data-orbit="0deg 75deg 105%"
         data-placement="front"
         data-label="Frente"
-        data-overlay-top="38%"
+        data-overlay-top="50%"
+        data-overlay-width="44%"
+        data-overlay-height="58%"
       >
         <svg
           class="w-3 h-3 lg:w-4 lg:h-4 shrink-0"
@@ -199,7 +201,9 @@
         data-orbit="180deg 75deg 105%"
         data-placement="back"
         data-label="Espalda"
-        data-overlay-top="36%"
+        data-overlay-top="50%"
+        data-overlay-width="44%"
+        data-overlay-height="60%"
       >
         <svg
           class="w-3 h-3 lg:w-4 lg:h-4 shrink-0"
@@ -217,36 +221,13 @@
       </button>
     </div>
 
-    <div
-      class="absolute top-4 right-4 z-10 flex items-center gap-1.5 pointer-events-none"
-      style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid #DADCE0; border-radius: 20px; padding: 0.35rem 0.75rem; box-shadow: 0 1px 4px rgba(60,64,67,0.10);"
-    >
-      <svg
-        class="w-3 h-3"
-        style="color:#4285F4;"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2.5"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-        ></path>
-      </svg>
-      <span
-        class="text-[10px] lg:text-xs font-semibold hidden sm:block"
-        style="color:#5F6368;">Arrastra para rotar</span
-      >
-    </div>
   </div>
 </div>
 
 <style>
   .viewer-shell {
     background: linear-gradient(160deg, #f8f9fa 0%, #eef2ff 100%);
-    height: 280px;
+    height: 320px;
     transition:
       box-shadow 300ms ease,
       border-color 300ms ease;
@@ -254,12 +235,12 @@
 
   @media (min-width: 640px) {
     .viewer-shell {
-      height: 340px;
+      height: 400px;
     }
   }
   @media (min-width: 1024px) {
     .viewer-shell {
-      height: 450px;
+      height: 520px;
     }
   }
 
@@ -351,7 +332,9 @@
     const orbit = btn.dataset.orbit ?? "0deg 75deg 105%";
     const placement = btn.dataset.placement ?? "front";
     const label = btn.dataset.label ?? "Frente";
-    const overlayTop = btn.dataset.overlayTop ?? "38%";
+    const overlayTop = btn.dataset.overlayTop ?? "50%";
+    const overlayWidth = btn.dataset.overlayWidth ?? "44%";
+    const overlayHeight = btn.dataset.overlayHeight ?? "58%";
     if (modelEl) modelEl.cameraOrbit = orbit;
     placementInput.value = placement;
     const textSpan = placementBadge.querySelector(
@@ -359,6 +342,8 @@
     ) as HTMLElement | null;
     if (textSpan) textSpan.textContent = label;
     overlay3d.style.top = overlayTop;
+    overlay3d.style.width = overlayWidth;
+    overlay3d.style.height = overlayHeight;
     viewBtns.forEach((b) => {
       b.classList.remove("view-btn-active");
       b.setAttribute("aria-pressed", "false");

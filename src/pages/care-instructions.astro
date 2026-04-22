@@ -1,0 +1,550 @@
+---
+import "../styles/global.css";
+
+// Asset imports
+import recurso1Url from "../assets/models/Recurso 1.svg?url";
+import recurso3Url from "../assets/models/Recurso 3.svg?url";
+---
+
+<!doctype html>
+<html lang="es">
+   <head>
+      <meta charset="UTF-8" />
+      <meta
+         name="viewport"
+         content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+      />
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      <title>Instrucciones de Cuidado — Google Cloud Day</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link
+         href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+         rel="stylesheet"
+      />
+      <!-- GSAP config -->
+      <script
+         is:inline
+         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
+      ></script>
+   </head>
+
+   <body class="welcome-body !overflow-auto">
+      <!-- DECORATIVE CORNERS -->
+      <div class="corner corner-tr" aria-hidden="true">
+         <img src={recurso3Url} alt="" class="corner-img" />
+      </div>
+      <div class="corner corner-ml" aria-hidden="true">
+         <img src={recurso1Url} alt="" class="corner-img" />
+      </div>
+
+      <!-- MAIN VIEW CARD -->
+      <main class="welcome-card">
+         <!-- HEADER -->
+         <div class="dot-row mb-6 mt-2" aria-hidden="true">
+            <span class="dot" style="background:#4285F4; animation-delay: 0s;"
+            ></span>
+            <span class="dot" style="background:#EA4335; animation-delay: 0.1s;"
+            ></span>
+            <span class="dot" style="background:#FBBC04; animation-delay: 0.2s;"
+            ></span>
+            <span class="dot" style="background:#34A853; animation-delay: 0.3s;"
+            ></span>
+         </div>
+
+         <header class="hero-text opacity-0 gs-reveal">
+            <h1 class="greeting">Tu creación está en camino</h1>
+            <p class="subtitle mt-2">
+               Mientras preparamos tu prenda, aprende cómo mantenerla como
+               nueva.
+            </p>
+         </header>
+
+         <!-- PROGRESS BAR -->
+         <div class="progress-wrapper opacity-0 gs-reveal">
+            <div
+               class="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-2 px-1 gap-2"
+            >
+               <p
+                  id="fun-fact-ticker"
+                  class="text-[#4285F4] text-sm lg:text-base font-semibold opacity-0 transition-opacity duration-500"
+                  style="font-family: 'Inter', sans-serif;"
+               >
+                  Cargando...
+               </p>
+               <p
+                  id="timer-text"
+                  class="text-[#80868B] text-sm font-bold tracking-widest uppercase shrink-0 text-right sm:text-left"
+               >
+                  0%
+               </p>
+            </div>
+            <div
+               class="w-full h-2 bg-[#F1F3F4] rounded-full overflow-hidden shadow-inner"
+            >
+               <div
+                  id="progress-bar-fill"
+                  class="h-full bg-gradient-to-r from-[#4285F4] to-[#34A853] rounded-full w-0 transform-gpu transition-all"
+               >
+               </div>
+            </div>
+         </div>
+
+         <!-- SECTION CONTENT -->
+         <section class="cards-section">
+            <div class="cards-grid">
+               <!-- CARD 1 -->
+               <div class="care-card opacity-0 translate-y-8">
+                  <div class="card-icon bg-[#4285F4]/10 text-[#4285F4]">
+                     <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        ><path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                        ></path></svg
+                     >
+                  </div>
+                  <div class="text-left">
+                     <h3 class="card-title">Lavado Inteligente</h3>
+                     <p class="card-body">
+                        Lava tu prenda al revés y con agua fría para proteger la
+                        impresión digital.
+                     </p>
+                  </div>
+               </div>
+               <!-- CARD 2 -->
+               <div class="care-card opacity-0 translate-y-8">
+                  <div class="card-icon bg-[#EA4335]/10 text-[#EA4335]">
+                     <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        ><path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                        ></path></svg
+                     >
+                  </div>
+                  <div class="text-left">
+                     <h3 class="card-title">Secado al Aire</h3>
+                     <p class="card-body">
+                        Evita la secadora. El calor intenso puede afectar la
+                        elasticidad del diseño.
+                     </p>
+                  </div>
+               </div>
+               <!-- CARD 3 -->
+               <div class="care-card opacity-0 translate-y-8">
+                  <div class="card-icon bg-[#FBBC04]/10 text-[#FBBC04]">
+                     <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        ><path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           d="M3 10h10a8 8 0 018 8v2M3 10l3 3m-3-3l3-3"
+                        ></path></svg
+                     >
+                  </div>
+                  <div class="text-left">
+                     <h3 class="card-title">Planchado Seguro</h3>
+                     <p class="card-body">
+                        Si decides plancharla, hazlo siempre al revés. Nunca
+                        sobre los parches.
+                     </p>
+                  </div>
+               </div>
+               <!-- CARD 4 -->
+               <div class="care-card opacity-0 translate-y-8">
+                  <div class="card-icon bg-[#34A853]/10 text-[#34A853]">
+                     <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        ><path
+                           stroke-linecap="round"
+                           stroke-linejoin="round"
+                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        ></path></svg
+                     >
+                  </div>
+                  <div class="text-left">
+                     <h3 class="card-title">Cero Blanqueadores</h3>
+                     <p class="card-body">
+                        Usa detergentes suaves. El cloro puede opacar la viveza
+                        de los colores.
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+            <!-- QR SECTION -->
+            <div class="qr-card opacity-0 gs-reveal">
+               <div
+                  class="shrink-0 w-24 h-24 bg-white rounded-2xl p-2 flex items-center justify-center border border-[#DADCE0] shadow-sm"
+               >
+                  <svg
+                     width="100%"
+                     height="100%"
+                     viewBox="0 0 24 24"
+                     fill="#202124"
+                  >
+                     <path
+                        d="M3 3h6v6H3V3m2 2v2h2V5H5m8-2h6v6h-6V3m2 2v2h2V5h-2M3 13h6v6H3v-6m2 2v2h2v-2H5m10-2h4v2h-4v-2m-2-2h2v2h-2v-2m4 4h2v2h-2v-2m-2 2h2v2h-2v-2m2 2h2v2h-2v-2"
+                     ></path>
+                  </svg>
+               </div>
+               <div>
+                  <h4
+                     class="font-bold text-[#202124] text-xl mb-1"
+                     style="font-family: 'Google Sans', sans-serif;"
+                  >
+                     El manual en tu bolsillo
+                  </h4>
+                  <p
+                     class="text-[#5F6368] text-sm leading-relaxed"
+                     style="font-family: 'Inter', sans-serif;"
+                  >
+                     Escanea para llevarte estos consejos y liberar el Kiosko
+                     para el siguiente creador.
+                  </p>
+               </div>
+            </div>
+         </section>
+
+         <footer class="page-footer opacity-0 gs-reveal">
+            <div class="flex flex-col gap-4 w-full items-center">
+               <a href="/gracias" class="cta-btn">
+                  Entendido, ¡ya terminé!
+                  <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                  </svg>
+               </a>
+            </div>
+         </footer>
+      </main>
+   </body>
+</html>
+
+<style>
+   *,
+   *::before,
+   *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+   }
+   html {
+      background: #ffffff;
+   }
+
+   .welcome-body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #ffffff;
+      font-family: "Google Sans", "Inter", sans-serif;
+      position: relative;
+      /* Más padding horizontal en móvil y escritorio */
+      padding: 3rem clamp(1.5rem, 5vw, 4rem);
+   }
+
+   .corner {
+      position: fixed;
+      pointer-events: none;
+      z-index: 2;
+   }
+   .corner-img {
+      width: 100%;
+      height: auto;
+      display: block;
+   }
+   .corner-tr {
+      top: 5%;
+      right: 5%;
+      width: clamp(200px, 20vw, 320px);
+      z-index: 15;
+   }
+   .corner-ml {
+      top: 35%;
+      left: 8%;
+      width: clamp(100px, 10vw, 120px);
+      z-index: 15;
+   }
+
+   /* ── Main card ── */
+   .welcome-card {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(1rem, 2vh, 2rem);
+      max-width: 960px;
+      width: 100%;
+      text-align: center;
+      margin: auto;
+      /* Padding interno para separar del borde en pantallas pequeñas */
+      padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+   }
+
+   /* ── Typography ── */
+   .hero-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+   }
+   .greeting {
+      font-size: clamp(2.5rem, 8vw, 3.8rem);
+      font-weight: 500;
+      color: #5f6368;
+      line-height: 1.1;
+   }
+   .subtitle {
+      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      color: #80868b;
+      line-height: 1.4;
+   }
+
+   /* ── Progress bar wrapper ── */
+   .progress-wrapper {
+      width: 100%;
+      max-width: 700px;
+      margin-top: 2rem;
+      /* Padding para que no toque los bordes */
+      padding: 0 clamp(0.5rem, 2vw, 1.5rem);
+   }
+
+   /* ── Cards section ── */
+   .cards-section {
+      width: 100%;
+      max-width: 960px;
+      position: relative;
+      z-index: 10;
+      /* Margen vertical generoso */
+      margin: clamp(1.5rem, 4vh, 3rem) 0;
+      padding: 0 clamp(0.25rem, 1.5vw, 1rem);
+   }
+
+   .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+   }
+   @media (min-width: 640px) {
+      .cards-grid {
+         grid-template-columns: 1fr 1fr;
+         gap: 1.5rem;
+      }
+   }
+
+   /* ── Care card ── */
+   .care-card {
+      background: #f8f9fa;
+      /* Padding generoso y uniforme */
+      padding: clamp(1.5rem, 3vw, 2rem);
+      border-radius: 2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      border: 1px solid transparent;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition:
+         box-shadow 0.2s ease,
+         transform 0.2s ease;
+   }
+   .care-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+   }
+
+   .card-icon {
+      flex-shrink: 0;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+   }
+
+   .card-title {
+      font-family: "Google Sans", sans-serif;
+      font-weight: 700;
+      color: #202124;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+   }
+
+   .card-body {
+      font-family: "Inter", sans-serif;
+      color: #5f6368;
+      font-size: 0.875rem;
+      line-height: 1.6;
+   }
+
+   /* ── QR card ── */
+   .qr-card {
+      width: 100%;
+      max-width: 640px;
+      margin: clamp(2rem, 5vh, 3.5rem) auto 0;
+      background: #ffffff;
+      border-radius: 1.75rem;
+      /* Padding interno más generoso */
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      border: 1px solid #f1f3f4;
+   }
+   @media (min-width: 640px) {
+      .qr-card {
+         flex-direction: row;
+         text-align: left;
+      }
+   }
+
+   /* ── Footer ── */
+   .page-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      width: 100%;
+      /* Margen superior y padding inferior para que no quede pegado */
+      margin-top: clamp(2rem, 5vh, 4rem);
+      padding-bottom: clamp(2rem, 5vh, 4rem);
+   }
+
+   /* ── CTA Button ── */
+   .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: #4285f4;
+      color: #ffffff;
+      border-radius: 9999px;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 600;
+      padding: clamp(0.9rem, 2vh, 1.1rem) clamp(2rem, 8vw, 4rem);
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+      transition: all 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-family: "Google Sans", "Inter", sans-serif;
+   }
+   .cta-btn:hover {
+      background: #3367d6;
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 10px 32px rgba(66, 133, 244, 0.5);
+   }
+   .cta-arrow {
+      width: 1.4rem;
+      height: 1.4rem;
+      transition: transform 200ms ease;
+   }
+   .cta-btn:hover .cta-arrow {
+      transform: translateX(6px);
+   }
+
+   /* ── Dots ── */
+   .dot-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+   }
+   .dot {
+      display: block;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      animation: dot-jump 1.4s infinite ease-in-out;
+      will-change: transform;
+   }
+   @keyframes dot-jump {
+      0%,
+      80%,
+      100% {
+         transform: translateY(0);
+      }
+      40% {
+         transform: translateY(-12px);
+      }
+   }
+</style>
+
+<script is:inline>
+   // Clear kiosk session so the next person starts fresh
+   sessionStorage.removeItem('currentCustomization');
+   sessionStorage.removeItem('selectedGarmentId');
+   sessionStorage.removeItem('selectedSizeId');
+
+   document.addEventListener("DOMContentLoaded", function () {
+      function initGSAP() {
+         var gsap = window.gsap;
+         if (!gsap) { setTimeout(initGSAP, 100); return; }
+
+         // 1. Reveal Header, Progress & Footer
+         gsap.to(".gs-reveal", {
+            opacity: 1, y: 0, duration: 0.8, stagger: 0.15,
+            ease: "power2.out", force3D: true,
+         });
+
+         // 2. Stagger Care Cards
+         gsap.to(".care-card", {
+            opacity: 1, y: 0, duration: 0.8, stagger: 0.15,
+            ease: "back.out(1.2)", delay: 0.4, force3D: true,
+         });
+
+         // 3. Progress Bar 120s Timer
+         var timerText = document.getElementById("timer-text");
+         var progressTween = gsap.to("#progress-bar-fill", {
+            width: "100%", duration: 120, ease: "none", force3D: true,
+            onUpdate: function () {
+               if (timerText) timerText.innerText = Math.round(progressTween.progress() * 100) + "%";
+            },
+         });
+
+         // 4. Fun Facts Ticker
+         var facts = [
+            "¿Sabías que Google Cloud procesó tu diseño en milisegundos?",
+            "La IA que usamos hoy es la misma potencia detrás de Google Search.",
+            "Tu prenda es única: hay miles de combinaciones, pero esta es la tuya.",
+            "Google Cloud Day 2026: Innovación en cada fibra.",
+            "La infraestructura de este Kiosko corre sobre arquitectura de islas (Astro).",
+         ];
+         var currentFactIndex = 0;
+         var tickerElement = document.getElementById("fun-fact-ticker");
+         if (tickerElement) {
+            tickerElement.innerText = facts[0];
+            tickerElement.style.opacity = "1";
+            setInterval(function () {
+               tickerElement.style.opacity = "0";
+               setTimeout(function () {
+                  currentFactIndex = (currentFactIndex + 1) % facts.length;
+                  tickerElement.innerText = facts[currentFactIndex];
+                  tickerElement.style.opacity = "1";
+               }, 500);
+            }, 15000);
+         }
+      }
+      initGSAP();
+   });
+</script>

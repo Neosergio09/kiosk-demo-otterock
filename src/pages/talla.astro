@@ -365,12 +365,13 @@ if (garments.length === 0) {
       });
     });
 
+    // Guardar en sessionStorage por si la siguiente página lo necesita
+    if (garmentId) sessionStorage.setItem('selectedGarmentId', garmentId);
+
     // Enviar resultado al Editor (Paso 3)
     btnContinuar?.addEventListener('click', () => {
-      if(selectedSizeId && garmentId) {
-        sessionStorage.setItem('selectedSizeId', selectedSizeId);
-        window.location.href = `/editor?garmentId=${garmentId}&size=${selectedSizeId}`;
-      }
+      if (!garmentId || !selectedSizeId) return;
+      window.location.href = `/customize/${garmentId}?size=${selectedSizeId}`;
     });
   });
 </script>
