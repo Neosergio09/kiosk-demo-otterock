@@ -12,6 +12,9 @@ import camisaNegraImg from "../assets/models/CamisaNegra.png";
 import totebagCremaImg from "../assets/models/TotebagCrema.png";
 import totebagNegraImg from "../assets/models/TotebagNegra.png";
 
+// IDs que están deshabilitados
+const DISABLED_IDS = new Set(['tshirt-black', '1', 'totebag-black', '4']);
+
 let garments = [];
 try {
   const { data, error } = await supabase
@@ -28,18 +31,18 @@ try {
 // Fallback visual
 if (garments.length === 0) {
   garments = [
-    { id: 'tshirt-black', name: 'Camiseta Negra', description: '100% algodón', localImg: camisaNegraImg },
-    { id: 'tshirt-white', name: 'Camiseta Blanca', description: '100% algodón', localImg: camisaBlancaImg },
-    { id: 'totebag-crema', name: 'Totebag Crema', description: '100% algodón', localImg: totebagCremaImg },
-    { id: 'totebag-black', name: 'Totebag Negra', description: '100% algodón', localImg: totebagNegraImg },
+    { id: 'tshirt-black',  name: 'Camiseta Negra', description: '100% algodón', localImg: camisaNegraImg,  disabled: true  },
+    { id: 'tshirt-white',  name: 'Camiseta Blanca', description: '100% algodón', localImg: camisaBlancaImg, disabled: false },
+    { id: 'totebag-crema', name: 'Totebag Crema',  description: '100% algodón', localImg: totebagCremaImg, disabled: false },
+    { id: 'totebag-black', name: 'Totebag Negra',  description: '100% algodón', localImg: totebagNegraImg, disabled: true  },
   ];
 } else {
-  // Asignar imágenes locales a los productos que vengan de Supabase según su ID
   garments = garments.map((g: any) => {
-    if(g.id === 'tshirt-black' || g.id === '1') g.localImg = camisaNegraImg;
-    if(g.id === 'tshirt-white' || g.id === '2') g.localImg = camisaBlancaImg;
-    if(g.id === 'totebag-crema' || g.id === '3') g.localImg = totebagCremaImg;
-    if(g.id === 'totebag-black' || g.id === '4') g.localImg = totebagNegraImg;
+    if (g.id === 'tshirt-black'  || g.id === '1') g.localImg = camisaNegraImg;
+    if (g.id === 'tshirt-white'  || g.id === '2') g.localImg = camisaBlancaImg;
+    if (g.id === 'totebag-crema' || g.id === '3') g.localImg = totebagCremaImg;
+    if (g.id === 'totebag-black' || g.id === '4') g.localImg = totebagNegraImg;
+    g.disabled = DISABLED_IDS.has(g.id);
     return g;
   });
 }
@@ -49,20 +52,13 @@ if (garments.length === 0) {
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#FFFFFF" />
     <title>Paso 1: Prenda — Google Cloud Day</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
 
   <body class="welcome-body">
@@ -92,35 +88,43 @@ if (garments.length === 0) {
       <!-- PRODUCT GRID -->
       <section class="w-full max-w-2xl lg:max-w-5xl grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 relative z-10 my-4 md:my-6">
         {garments.map((g, i) => (
-          <button 
-            class="product-card group relative w-full h-[18rem] md:h-[25.2rem] bg-stone-50 rounded-3xl flex flex-col items-center justify-end pb-0 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border-2 border-transparent animate-slide-up"
+          <button
+            class={`product-card group relative w-full h-[18rem] md:h-[25.2rem] bg-stone-50 rounded-3xl flex flex-col items-center justify-end pb-0 transition-all duration-300 border-2 border-transparent animate-slide-up${g.disabled ? ' is-disabled' : ' hover:-translate-y-2 hover:shadow-xl'}`}
             data-id={g.id}
             data-name={g.name}
+            disabled={g.disabled}
+            aria-disabled={g.disabled ? 'true' : 'false'}
             style={`animation-delay: ${0.2 + (i * 0.1)}s;`}
           >
             <!-- Mockup / Imagen -->
-            <div class="flex-1 w-full overflow-hidden flex items-center justify-center p-4">
+            <div class="flex-1 w-full overflow-hidden flex items-center justify-center p-4 relative">
               {g.localImg ? (
-                <Image src={g.localImg} alt={g.name} class="w-full h-full object-contain drop-shadow-md" />
+                <Image src={g.localImg} alt={g.name} class={`w-full h-full object-contain drop-shadow-md${g.disabled ? '' : ' transition-transform duration-500 group-hover:scale-110'}`} />
               ) : g.image_url ? (
-                <img src={g.image_url} alt={g.name} class="w-full h-full object-contain drop-shadow-md" />
+                <img src={g.image_url} alt={g.name} class={`w-full h-full object-contain drop-shadow-md${g.disabled ? '' : ' transition-transform duration-500 group-hover:scale-110'}`} />
               ) : (
-                <div class="w-20 h-20 text-zinc-300 flex items-center justify-center group-hover:text-zinc-400 transition-colors">
-                   <svg viewBox="0 0 100 100" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <div class="w-20 h-20 text-zinc-300 flex items-center justify-center">
+                  <svg viewBox="0 0 100 100" fill="none" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
                     <path d="M30 15 L15 35 L28 40 L28 82 L72 82 L72 40 L85 35 L70 15 L60 22 C58 28 42 28 40 22 Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" fill="currentColor" fill-opacity="0.1"/>
-                   </svg>
+                  </svg>
+                </div>
+              )}
+
+              <!-- "En desarrollo" overlay — solo para deshabilitados -->
+              {g.disabled && (
+                <div class="dev-overlay" aria-hidden="true">
+                  <span class="dev-badge">En desarrollo</span>
                 </div>
               )}
             </div>
 
-            <!-- Meta (Nombre y Descripción) -->
-            <!-- ✅ CAMBIO: mb-[5%] → mb-[8%] y pb-5 → pb-4 para dar aire al borde inferior -->
+            <!-- Meta -->
             <div class="w-[85%] bg-white shadow-sm rounded-2xl pt-2 pb-3 px-2 flex flex-col items-center transition-colors group-hover:bg-blue-50 relative z-10 mb-[6%] min-h-[4.5rem] justify-center">
               <span class="text-blue-500 text-[11px] sm:text-[13px] md:text-sm font-medium text-center leading-tight font-sans">{g.name}</span>
               <span class="text-neutral-400 text-[9px] md:text-xs font-light tracking-wide font-sans mt-1 line-clamp-1">{g.description}</span>
             </div>
 
-            <!-- Indicador de selección oculto -->
+            <!-- Indicador de selección -->
             <div class="selection-ring absolute -inset-[2px] rounded-[calc(1.5rem+2px)] border-4 border-[#4285F4] opacity-0 transition-opacity duration-300 pointer-events-none"></div>
           </button>
         ))}
@@ -128,8 +132,7 @@ if (garments.length === 0) {
 
       <footer class="flex flex-col items-center gap-6 mt-4 w-full animate-slide-up" style="animation-delay:0.6s;">
         <div class="flex flex-col gap-4 w-full items-center">
-          <!-- Botón Continuar (Deshabilitado por defecto) -->
-          <button 
+          <button
             id="btn-continuar"
             disabled
             class="cta-btn disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:hover:transform-none disabled:hover:bg-[#4285f4]"
@@ -141,26 +144,19 @@ if (garments.length === 0) {
             </svg>
           </button>
 
-          <!-- Botón Volver -->
           <a href="/" class="group flex items-center justify-center transition-transform hover:-translate-y-1 mt-2">
             <img src={botonVolverUrl} alt="Volver" class="h-12 w-auto object-contain" />
           </a>
-        </div> 
+        </div>
       </footer>
-
     </main>
   </body>
 </html>
 
 <style>
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  html {
-    background: #ffffff;
-  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #ffffff; }
+
   .welcome-body {
     min-height: 100vh;
     display: flex;
@@ -171,28 +167,12 @@ if (garments.length === 0) {
     overflow: hidden;
     position: relative;
   }
-  .corner {
-    position: fixed;
-    pointer-events: none;
-    z-index: 2;
-  }
-  .corner-img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .corner-tr {
-    top: 5%;
-    right: 5%;
-    width: 320px;
-    z-index: 15;
-  }
-  .corner-ml {
-    top: 35%;
-    left: 8%;
-    width: 120px;
-    z-index: 15;
-  }
+
+  .corner { position: fixed; pointer-events: none; z-index: 2; }
+  .corner-img { width: 100%; height: auto; display: block; }
+  .corner-tr { top: 5%; right: 5%; width: 320px; z-index: 15; }
+  .corner-ml { top: 35%; left: 8%; width: 120px; z-index: 15; }
+
   .welcome-card {
     position: relative;
     z-index: 20;
@@ -206,20 +186,13 @@ if (garments.length === 0) {
     text-align: center;
   }
   @media (min-width: 1024px) {
-    .welcome-card {
-      max-width: 1200px;
-      padding: 3rem 2rem;
-    }
+    .welcome-card { max-width: 1200px; padding: 3rem 2rem; }
   }
-  .dot-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+
+  .dot-row { display: flex; align-items: center; gap: 12px; }
   .dot {
     display: block;
-    width: 18px;
-    height: 18px;
+    width: 18px; height: 18px;
     border-radius: 50%;
     animation: dot-jump 1.4s infinite ease-in-out;
     will-change: transform;
@@ -228,31 +201,53 @@ if (garments.length === 0) {
     0%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-12px); }
   }
-  .hero-text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: center;
-  }
+
+  .hero-text { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
   .greeting {
     font-size: clamp(2rem, 8vw, 2.5rem);
     font-weight: 500;
     color: #5f6368;
   }
-  @media (min-width: 1024px) {
-    .greeting {
-      font-size: 3.5rem;
-    }
+  @media (min-width: 1024px) { .greeting { font-size: 3.5rem; } }
+  .subtitle { font-size: clamp(1.1rem, 4vw, 1.5rem); color: #80868b; }
+  @media (min-width: 1024px) { .subtitle { font-size: 2rem; } }
+
+  /* ── Disabled card ── */
+  .product-card.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+    pointer-events: none; /* bloquea cualquier interacción */
   }
-  .subtitle {
-    font-size: clamp(1.1rem, 4vw, 1.5rem);
-    color: #80868b;
+
+  /* ── "En desarrollo" overlay ── */
+  .dev-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: inherit;
+    z-index: 10;
   }
-  @media (min-width: 1024px) {
-    .subtitle {
-      font-size: 2rem;
-    }
+
+  .dev-badge {
+    background: #202124;
+    color: #ffffff;
+    font-family: 'Google Sans', sans-serif;
+    font-weight: 700;
+    font-size: clamp(0.65rem, 1.8vw, 0.8rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
   }
+
+  /* ── CTA button ── */
   .cta-btn {
     display: inline-flex;
     align-items: center;
@@ -276,35 +271,14 @@ if (garments.length === 0) {
     box-shadow: 0 10px 32px rgba(66, 133, 244, 0.5);
   }
   .cta-arrow {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.5rem; height: 1.5rem;
     transition: transform 200ms ease;
   }
-  .cta-btn:hover:not(:disabled) .cta-arrow {
-    transform: translateX(6px);
-  }
-  .event-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(66, 133, 244, 0.08);
-    border: 1px solid rgba(66, 133, 244, 0.25);
-    border-radius: 9999px;
-    padding: 0.5rem 1.25rem;
-    animation: pill-pulse 3s infinite ease-in-out;
-  }
-  @keyframes pill-pulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.03); opacity: 0.9; }
-  }
-  .event-label {
-    font-weight: 500;
-    color: #4285f4;
-    font-size: 0.9rem;
-  }
+  .cta-btn:hover:not(:disabled) .cta-arrow { transform: translateX(6px); }
+
   @keyframes slide-up {
     from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .animate-slide-up {
     animation: slide-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -313,35 +287,35 @@ if (garments.length === 0) {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const cards = document.querySelectorAll('.product-card');
+    // Solo cards habilitadas (pointer-events: none en las disabled las excluye de todos modos)
+    const cards = document.querySelectorAll<HTMLButtonElement>('.product-card:not(.is-disabled)');
     const btnContinuar = document.getElementById('btn-continuar') as HTMLButtonElement | null;
     let selectedProductId: string | null = null;
 
     cards.forEach(card => {
       card.addEventListener('click', () => {
-        cards.forEach(c => {
-          c.classList.remove('bg-blue-50'); 
+        // Quitar selección previa de todas las cards
+        document.querySelectorAll('.product-card').forEach(c => {
+          c.classList.remove('bg-blue-50');
           c.querySelector('.selection-ring')?.classList.remove('opacity-100');
         });
 
         card.classList.add('bg-blue-50');
         card.querySelector('.selection-ring')?.classList.add('opacity-100');
-        
+
         selectedProductId = card.getAttribute('data-id');
-        
+
         card.animate([
-          { transform: 'scale(0.95)', translateY: '0px' },
-          { transform: 'scale(1)', translateY: '-8px' }
+          { transform: 'scale(0.95) translateY(0px)' },
+          { transform: 'scale(1) translateY(-8px)' }
         ], { duration: 250, easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)', fill: 'forwards' });
 
-        if (btnContinuar) {
-          btnContinuar.removeAttribute('disabled');
-        }
+        if (btnContinuar) btnContinuar.removeAttribute('disabled');
       });
     });
 
     btnContinuar?.addEventListener('click', () => {
-      if(selectedProductId) {
+      if (selectedProductId) {
         sessionStorage.setItem('selectedGarmentId', selectedProductId);
         window.location.href = `/talla?garmentId=${selectedProductId}`;
       }
