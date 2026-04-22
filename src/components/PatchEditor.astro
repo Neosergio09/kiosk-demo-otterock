@@ -1,10 +1,16 @@
 ---
 import ShirtViewer3D from './ShirtViewer3D.astro';
+import totebagCremaImg from '../assets/models/TotebagCrema.png';
+import totebagNegraImg from '../assets/models/TotebagNegra.png';
 
 interface Props {
   isPreview?: boolean;
+  garmentId?: string;
 }
-const { isPreview = false } = Astro.props;
+const { isPreview = false, garmentId = '' } = Astro.props;
+
+const isTotebag = garmentId.includes('totebag');
+const totebagSrc = garmentId === 'totebag-crema' ? totebagCremaImg.src : totebagNegraImg.src;
 
 const patches = [
   { id: 'cloud',   icon: '☁️', label: 'Cloud'   },
@@ -15,73 +21,169 @@ const patches = [
 ---
 
 <div class="flex flex-col gap-4 lg:gap-5" id="patch-editor-root">
-  <!-- Hidden input for final payload -->
+  <!-- Hidden inputs for final payload -->
   <input type="hidden" name="customization_data" id="customization-data" value='{"patches":[],"text":""}' />
+  <input type="hidden" id="placement-input" name="placement" value="front" />
 
-  <!-- 3D GARMENT VIEWER -->
-  <div class="relative">
-    <ShirtViewer3D isPreview={isPreview} />
-    
-    {isPreview && (
-      <div 
-        class="absolute inset-0 z-[100] cursor-default" 
-        style="background: transparent;"
-        aria-hidden="true"
-      ></div>
-    )}
-  </div>
-
-  {!isPreview && (
-    <div class="flex flex-col gap-3">
-    <div class="flex justify-between items-center px-1">
-      <p class="text-sm lg:text-base font-semibold" style="color:#202124;">Parches <span style="color:#80868B;font-weight:400;">(Max 4)</span></p>
-      <span id="patch-count"
-        class="text-xs font-bold px-2 py-1 rounded-full"
-        style="background:rgba(66,133,244,0.10); color:#4285F4; border:1px solid rgba(66,133,244,0.25);"
-      >0 / 4</span>
-    </div>
-
-    <!--
-      patch-item: touch-action:none is set inline so the browser
-      does NOT intercept pointer events for scroll/zoom while dragging.
-    -->
-    <div class="grid grid-cols-4 gap-2">
-      {patches.map(p => (
-        <div
-          class="patch-item"
-          style="touch-action: none; aspect-ratio: 1;"
-          data-type={p.label}
-          data-icon={p.icon}
-          role="button"
-          tabindex="0"
-          aria-label={`Parche: ${p.label}`}
-        >
-          {p.icon}
+  {isTotebag ? (
+    /* ── TOTE BAG VIEWER ─────────────────────────────────────── */
+    <div class="flex flex-col gap-3 lg:gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-6 lg:px-10 pt-4">
+        <div class="flex flex-col min-w-0">
+          <p class="text-lg lg:text-2xl font-bold leading-tight tracking-tight" style="color:#202124;">
+            Personaliza tu tote bag
+          </p>
+          <p class="text-[11px] lg:text-base mt-1" style="color:#5F6368;">
+            Escribe tu nombre · verás la vista previa en tiempo real
+          </p>
         </div>
-      ))}
-    </div>
+        <span class="flex items-center gap-2 px-4 py-2 rounded-full text-[10px] lg:text-xs font-bold uppercase tracking-widest w-fit shrink-0 shadow-sm"
+          style="background: rgba(66,133,244,0.10); border: 1px solid rgba(66,133,244,0.35); color: #4285F4;">
+          <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background:#4285F4;"></span>
+          Vista previa
+        </span>
+      </div>
 
-    <!-- TEXT TOOL -->
-    <div class="mt-2 p-4 rounded-2xl flex flex-col gap-3"
-         style="background:#F8F9FA; border:1px solid #DADCE0;">
-      <label for="custom-text-input"
-             class="text-xs lg:text-sm font-medium uppercase tracking-widest"
-             style="color:#80868B;">
-        Texto Personalizado <span style="font-weight:400;">(1 • máx 15 caracteres)</span>
-      </label>
-      <input
-        type="text"
-        id="custom-text-input"
-        placeholder="Ej: GOOGLE"
-        maxlength="15"
-        class="custom-text-input"
-      />
+      <div class="tote-shell">
+        <div
+          class="absolute inset-0 pointer-events-none z-0"
+          style="background: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(66,133,244,0.05) 0%, transparent 70%);"
+        ></div>
+        <div class="tote-img-wrap">
+          <img src={totebagSrc} alt="Tote bag" class="tote-img" />
+          <div id="tote-text-overlay" class="tote-text-overlay" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      {!isPreview && (
+        <div class="px-6 lg:px-10 pb-2">
+          <div class="p-4 rounded-2xl flex flex-col gap-3" style="background:#F8F9FA; border:1px solid #DADCE0;">
+            <label for="custom-text-input"
+                   class="text-xs lg:text-sm font-medium uppercase tracking-widest"
+                   style="color:#80868B;">
+              Nombre <span style="font-weight:400;">(máx 15 caracteres)</span>
+            </label>
+            <input
+              type="text"
+              id="custom-text-input"
+              placeholder="Ej: GOOGLE"
+              maxlength="15"
+              class="custom-text-input"
+            />
+          </div>
+        </div>
+      )}
     </div>
-  </div>
+  ) : (
+    /* ── SHIRT VIEWER ────────────────────────────────────────── */
+    <div>
+      <div class="relative">
+        <ShirtViewer3D isPreview={isPreview} />
+        {isPreview && (
+          <div class="absolute inset-0 z-[100] cursor-default" style="background: transparent;" aria-hidden="true"></div>
+        )}
+      </div>
+
+      {!isPreview && (
+        <div class="flex flex-col gap-3 px-6 lg:px-10 pb-2 mt-3">
+          <div class="flex justify-between items-center px-1">
+            <p class="text-sm lg:text-base font-semibold" style="color:#202124;">Parches <span style="color:#80868B;font-weight:400;">(Max 4)</span></p>
+            <span id="patch-count"
+              class="text-xs font-bold px-2 py-1 rounded-full"
+              style="background:rgba(66,133,244,0.10); color:#4285F4; border:1px solid rgba(66,133,244,0.25);"
+            >0 / 4</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-2">
+            {patches.map(p => (
+              <div
+                class="patch-item"
+                style="touch-action: none; aspect-ratio: 1;"
+                data-type={p.label}
+                data-icon={p.icon}
+                role="button"
+                tabindex="0"
+                aria-label={`Parche: ${p.label}`}
+              >
+                {p.icon}
+              </div>
+            ))}
+          </div>
+
+          <div class="mt-2 p-4 rounded-2xl flex flex-col gap-3"
+               style="background:#F8F9FA; border:1px solid #DADCE0;">
+            <label for="custom-text-input"
+                   class="text-xs lg:text-sm font-medium uppercase tracking-widest"
+                   style="color:#80868B;">
+              Texto Personalizado <span style="font-weight:400;">(1 • máx 15 caracteres)</span>
+            </label>
+            <input
+              type="text"
+              id="custom-text-input"
+              placeholder="Ej: GOOGLE"
+              maxlength="15"
+              class="custom-text-input"
+            />
+          </div>
+        </div>
+      )}
+    </div>
   )}
 </div>
 
 <style>
+  /* ── Tote bag shell ── */
+  .tote-shell {
+    position: relative;
+    background: linear-gradient(160deg, #f8f9fa 0%, #eef2ff 100%);
+    border: 1px solid #DADCE0;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    height: 320px;
+    box-shadow: 0 1px 4px rgba(60,64,67,0.12), 0 8px 24px rgba(60,64,67,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 1px;
+  }
+  @media (min-width: 640px)  { .tote-shell { height: 400px; } }
+  @media (min-width: 1024px) { .tote-shell { height: 520px; } }
+
+  .tote-img-wrap {
+    position: relative;
+    height: 88%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tote-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.12));
+  }
+  .tote-text-overlay {
+    position: absolute;
+    bottom: 22%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Google Sans', 'Inter', sans-serif;
+    font-size: clamp(0.7rem, 2.5vw, 1.2rem);
+    font-weight: 800;
+    color: #1a1a2e;
+    white-space: nowrap;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(255,255,255,0.9), 0 1px 0 rgba(255,255,255,0.6);
+    min-height: 1.5em;
+  }
+
   /* ── Patch inventory items ── */
   .patch-item {
     display: flex;
@@ -98,27 +200,23 @@ const patches = [
     transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
     will-change: transform;
   }
-
   .patch-item:hover {
     border-color: rgba(66,133,244,0.5);
     box-shadow: 0 2px 8px rgba(66,133,244,0.15);
   }
-
-  /* Lift state applied via JS during drag */
   .patch-item.is-dragging {
     cursor: grabbing;
     opacity: 0.4;
   }
 
-  /* ── Floating ghost clone dragged by pointer ── */
+  /* ── Floating ghost clone ── */
   :global(.patch-ghost) {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
     font-size: clamp(1.75rem, 5vw, 2.5rem);
     transform: translate(-50%, -50%) scale(1.15);
-    filter: drop-shadow(0 8px 16px rgba(66,133,244,0.40))
-            drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    filter: drop-shadow(0 8px 16px rgba(66,133,244,0.40)) drop-shadow(0 2px 4px rgba(0,0,0,0.25));
     transition: transform 80ms ease;
     will-change: left, top, transform;
   }
@@ -133,7 +231,6 @@ const patches = [
     transition: transform 200ms cubic-bezier(0.34,1.56,0.64,1);
     animation: patch-land 220ms cubic-bezier(0.34,1.56,0.64,1) both;
   }
-
   @keyframes patch-land {
     from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
     to   { transform: translate(-50%, -50%) scale(1);   opacity: 1; }
@@ -204,26 +301,33 @@ const patches = [
   }
 </style>
 
-<script is:inline define:vars={{ isPreview }}>
+<script is:inline define:vars={{ isPreview, isTotebag }}>
 (function () {
   // ── STATE
   var patchesState = [];
   var currentSide  = 'front';
 
-  // ── DOM REFS (resolved after HTML is parsed)
-  var textInput    = document.getElementById('custom-text-input');
-  var hiddenInput  = document.getElementById('customization-data');
-  var patchCount   = document.getElementById('patch-count');
-  var canvas       = document.getElementById('design-3d-overlay');
+  // ── DOM REFS
+  var textInput      = document.getElementById('custom-text-input');
+  var hiddenInput    = document.getElementById('customization-data');
+  var patchCount     = document.getElementById('patch-count');
+  var canvas         = document.getElementById('design-3d-overlay');
+  var toteOverlay    = document.getElementById('tote-text-overlay');
   var inventoryItems = Array.from(document.querySelectorAll('.patch-item'));
 
   // ── STATE SYNC
   function updateState() {
-    var data = { patches: patchesState, text: textInput ? textInput.value : '' };
+    var text = textInput ? textInput.value : '';
+    var data = { patches: patchesState, text: text };
     if (hiddenInput) hiddenInput.value = JSON.stringify(data);
     sessionStorage.setItem('currentCustomization', JSON.stringify(data));
-    if (patchCount) patchCount.textContent = patchesState.length + ' / 4';
-    renderCanvas();
+
+    if (isTotebag) {
+      if (toteOverlay) toteOverlay.textContent = text.trim().toUpperCase();
+    } else {
+      if (patchCount) patchCount.textContent = patchesState.length + ' / 4';
+      renderCanvas();
+    }
   }
 
   function renderCanvas() {
@@ -259,17 +363,20 @@ const patches = [
     }
   }
 
-  // ── INIT (handles both "DOM ready" and "DOM already ready" cases)
+  // ── INIT
   function init() {
     var saved = sessionStorage.getItem('currentCustomization');
     if (saved) {
       try {
         var data = JSON.parse(saved);
         patchesState = data.patches || [];
-        if (textInput && data.text) textInput.value = data.text;
+        if (textInput && data.text) {
+          textInput.value = data.text;
+          if (isTotebag && toteOverlay) toteOverlay.textContent = data.text.trim().toUpperCase();
+        }
       } catch (e) {}
     }
-    renderCanvas();
+    if (!isTotebag) renderCanvas();
   }
 
   if (document.readyState === 'loading') {
@@ -278,18 +385,19 @@ const patches = [
     init();
   }
 
-  // ── LIVE EVENTS
+  // ── LIVE TEXT UPDATE
   if (textInput) {
     textInput.addEventListener('input', function () { updateState(); });
   }
 
+  // ── SIDE CHANGE (shirt only)
   window.addEventListener('sideChanged', function (e) {
     currentSide = e.detail.side;
     renderCanvas();
   });
 
-  // ── DRAG ENGINE (skip in preview mode)
-  if (!isPreview) {
+  // ── DRAG ENGINE (shirt only, skip in preview or tote bag)
+  if (!isPreview && !isTotebag) {
     var session = null;
 
     function createGhost(icon) {
