@@ -28,12 +28,12 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Google Sans + Inter for body text + Roboto Mono for terminal effects -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <!-- model-viewer web component (3D garment visualization) -->
+    <link rel="dns-prefetch" href="https://ajax.googleapis.com" />
+    <!-- Non-blocking font load: page renders immediately, fonts swap in -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;600&display=swap" /></noscript>
+    <!-- model-viewer web component — type="module" is already deferred by the browser -->
     <script
       type="module"
       src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
@@ -51,6 +51,7 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
     <div
       id="energy-perimeter"
       class="fixed inset-0 pointer-events-none -z-20 overflow-hidden"
+      style="contain: layout style;"
     >
       <!-- 15px LED Strip + inner soft-white fade overlay -->
       <div class="led-mask-shell absolute inset-0">
@@ -558,6 +559,8 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
     /* Pop the Google colors hard against the white surface */
     filter: saturate(2) brightness(1.3);
     animation: energy-spin 20s linear infinite;
+    /* Promote to its own compositor layer so rotation doesn't trigger repaints */
+    will-change: transform;
   }
 
   @keyframes energy-spin {
@@ -613,6 +616,8 @@ const { title = "Personalización de Prendas", step = 1 } = Astro.props;
     filter: blur(200px);
     opacity: 0;
     z-index: -1;
+    /* Each bulb animates opacity only — own layer avoids triggering layout */
+    will-change: opacity;
   }
 
   .bulb-tl {
